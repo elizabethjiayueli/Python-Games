@@ -1,5 +1,5 @@
 """
-
+s
 Moving Square
 
 All this game does is move a square around the screen using the arrow keys.
@@ -29,8 +29,8 @@ clock = pygame.time.Clock()
 # Main function
 def main():
     # Initial position of the square
-    square_x = SCREEN_WIDTH // 2 - SQUARE_SIZE // 2
-    square_y = SCREEN_HEIGHT // 2 - SQUARE_SIZE // 2
+    square_x = SCREEN_WIDTH // 2 - SQUARE_SIZE // 1
+    square_y = SCREEN_HEIGHT // 2 - SQUARE_SIZE // 1
     
     running = True
     
@@ -68,7 +68,7 @@ def main():
         screen.fill(BACKGROUND_COLOR)
 
         # Draw the square
-        pygame.draw.rect(screen, SQUARE_COLOR, (square_x, square_y, SQUARE_SIZE, SQUARE_SIZE))
+        pygame.draw.circle(screen, SQUARE_COLOR, (square_x, square_y, SQUARE_SIZE, r == 10, SQUARE_SIZE))
 
         # Update the display. Imagine that the screen is two different whiteboards. One
         # whiteboard is currently visible to the player, and the other whiteboard is being
