@@ -26,7 +26,7 @@ class GameSettings:
     screen_height: int = 500
     player_size: int = 10
     player_x: int = 100 # Initial x position of the player
-    gravity: float = 0.3 # acelleration, the change in velocity per frame
+    gravity: float = 0.5  # acelleration, the change in velocity per frame
     jump_velocity: int = 15
     white: tuple = (255, 255, 255)
     black: tuple = (0, 0, 0)
@@ -60,20 +60,27 @@ while running:
             running = False
 
     # Continuously jump. If the player is not jumping, initialize a new jump
+    keys = pygame.key.get_pressed()
+    bonus = pygame.key.get_mods()
+    if keys[pygame.K_SPACE]:
+        is_jumping = False
+    else:
+        is_jumping = True
+    if keys[pygame.K_SPACE] and bonus[pygame.KMOD_CTRL]:
+        jump_velocity = 20
     if is_jumping is False:
         # Jumping means that the player is going up. The top of the 
         # screen is y=0, and the bottom is y=SCREEN_HEIGHT. So, to go up,
         # we need to have a negative y velocity
         player_y_velocity = -settings.jump_velocity
         is_jumping = True
-
+    
     # Update player position. Gravity is always pulling the player down,
     # which is the positive y direction, so we add GRAVITY to the y velocity
     # to make the player go up more slowly. Eventually, the player will have
     # a positive y velocity, and gravity will pull the player down.
     player_y_velocity += settings.gravity
     player.y += player_y_velocity
-
     # If the player hits the ground, stop the player from falling.
     # The player's position is measured from the top left corner, so the
     # bottom of the player is player.y + PLAYER_SIZE. If the bottom of the
