@@ -11,7 +11,7 @@ What does it show you about pygame?
 * sound effects with pg.Sound
 * event processing, keyboard handling, QUIT handling.
 * a main loop frame limited with a game clock from pg.time.Clock
-* fullscreen switching.
+* fullscreen switching. 
 
 
 Controls
@@ -20,7 +20,7 @@ Controls
 * Left and right arrows to move.
 * Space bar to shoot
 * f key to toggle between fullscreen.
-
+f
 """
 
 import os

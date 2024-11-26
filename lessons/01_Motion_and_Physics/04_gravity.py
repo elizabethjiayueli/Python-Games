@@ -8,7 +8,7 @@ jump more realistic. The player goes up quickly, but falls slowly.
 """
 import pygame
 from dataclasses import dataclass
-
+   
 # Initialize Pygame
 pygame.init()
 
@@ -61,19 +61,18 @@ while running:
 
     # Continuously jump. If the player is not jumping, initialize a new jump
     keys = pygame.key.get_pressed()
-    bonus = pygame.key.get_mods()
-    if keys[pygame.K_SPACE]:
-        is_jumping = False
+    if keys[pygame.K_SPACE] or keys[pygame.K_UP] or keys[pygame.K_w]:
+        player_y_velocity = -settings.jump_velocity
+        is_jumping = True
+    if keys[pygame.K_w] and keys[pygame.K_LCTRL]:
+        player_y_velocity += -5
     else:
         is_jumping = True
-    if keys[pygame.K_SPACE] and bonus[pygame.KMOD_CTRL]:
-        jump_velocity = 20
-    if is_jumping is False:
+    #if is_jumping is False:
         # Jumping means that the player is going up. The top of the 
         # screen is y=0, and the bottom is y=SCREEN_HEIGHT. So, to go up,
         # we need to have a negative y velocity
-        player_y_velocity = -settings.jump_velocity
-        is_jumping = True
+        
     
     # Update player position. Gravity is always pulling the player down,
     # which is the positive y direction, so we add GRAVITY to the y velocity
@@ -81,6 +80,10 @@ while running:
     # a positive y velocity, and gravity will pull the player down.
     player_y_velocity += settings.gravity
     player.y += player_y_velocity
+    if player.top <= 0:
+        player.top = 0
+        player_y_velocity = 0
+        is_jumping = False
     # If the player hits the ground, stop the player from falling.
     # The player's position is measured from the top left corner, so the
     # bottom of the player is player.y + PLAYER_SIZE. If the bottom of the
