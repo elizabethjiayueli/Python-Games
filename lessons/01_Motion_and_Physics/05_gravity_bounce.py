@@ -23,8 +23,7 @@ class Settings:
     jump_x_velocity: int = 10
 
 # Initialize Pygame
-pygame.init()
-
+pygame.init() 
 # Create an instance of Settings
 settings = Settings()
 
