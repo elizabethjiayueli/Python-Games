@@ -26,10 +26,9 @@ class Parent(Person):
             spouse.spouse = self
         
         self.spouse = None
-
-    def add_child(self, child: Person):
-        """Adds a child to the parent's list of children."""
-        self.children.append(child)
+        
+    # def add_child(self, child: Person):
+    #     """Adds a child to the parent's list of children."""
         
 
     def say_hello(self, message: str):
@@ -49,12 +48,13 @@ class Parent(Person):
                 
 class Child(Person):
     """Child represents a child in our system."""
-
+    
     def __init__(self, name: str, age: int, parents: list, last: str):
         """Initializes a new Child object."""
         super().__init__(name, age, last)  # Call Person.__init__ to initialize the name and age attributes
         self.parents = parents
-
+        for parent in parents:
+            parent.children.append(self)
     def say_hello(self, message: str):
         """Prints a greeting to the console."""
         super().say_hello(message)
@@ -62,20 +62,25 @@ class Child(Person):
         
         
 # Now lets make a family
-mom = Parent("Hyeseung", 35, "Ahn")
-dad = Parent("Minsik", 40, "Ahn", mom)
+mom = Parent("Hyeseung", 49, "Ahn")
+dad = Parent("Minsik", 50, "Ahn", mom)
 
-charlie = Child("Jayden", 11, [mom, dad], "Ahn")
-dahlia = Child("Ella", 14, [mom, dad], "Ahn")
-
+jayden = Child("Jayden", 11, [mom, dad], "Ahn")
+ella = Child("Ella", 14, [mom, dad], "Ahn")
+def print_family(parent):
+    print(parent.spouse.name)
+    print(parent.name)
+    for child in parent.children:
+        print(child.name)
+print_family(mom)
 # Connect the children to the parents
-mom.add_child(charlie)
-mom.add_child(dahlia)
-dad.add_child(charlie)
-dad.add_child(dahlia)
+# mom.add_child(jayden)
+# mom.add_child(ella)
+# dad.add_child(jayden)
+# dad.add_child(ella)
 
 
 mom.say_hello("Hello!") # Call the say_hello method of the mom object
 print()
-dahlia.say_hello("Hello!")
-charlie.say_hello("Wassup!")
+ella.say_hello("Hello!")
+jayden.say_hello("Wassup!")

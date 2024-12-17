@@ -41,17 +41,21 @@ class Turtle:
 
         # Draw line to the new position
         pygame.draw.line(self.screen, black, (start_x, start_y), (self.x, self.y), 2)
-
+    def color(self, color):
+        self.color = color
     def left(self, angle):
         # Turn left by adjusting the angle counterclockwise
         self.angle = (self.angle + angle) % 360
+    def right(self, angle):
+        # Turn left by adjusting the angle counterclockwise
+        self.angle = (self.angle - angle) % 360
 
 class Behav(Turtle):
     
 # Main loop
 
 # Initialize Pygame
-pygame.init()
+    pygame.init()
 
 # Screen dimensions and setup
 width, height = 500, 500
