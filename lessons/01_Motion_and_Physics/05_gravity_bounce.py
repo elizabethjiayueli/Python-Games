@@ -58,10 +58,10 @@ while running:
             is_jumping = True
         else:
             is_jumping = True
-        if keys[pygame.K_a]:
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             player_x_velocity -= settings.jump_x_velocity
             player_y_velocity = -settings.jump_y_velocity
-        if keys[pygame.K_d]:
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             player_x_velocity += settings.jump_x_velocity
             player_y_velocity = -settings.jump_y_velocity
         #player_x_velocity = settings.jump_x_velocity * x_direction

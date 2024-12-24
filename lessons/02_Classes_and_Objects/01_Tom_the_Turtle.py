@@ -24,7 +24,7 @@ class Turtle:
         self.screen = screen
         self.angle = 0  # Angle in degrees, starting facing right
 
-    def forward(self, distance):
+    def forward(self, distance, color):
         # Calculate new position based on current angle
         radian_angle = math.radians(self.angle)
 
@@ -38,18 +38,16 @@ class Turtle:
         # Update the turtle's position
         self.x += dx
         self.y -= dy
-
         # Draw line to the new position
-        pygame.draw.line(self.screen, black, (start_x, start_y), (self.x, self.y), 2)
-    def color(self, color):
-        self.color = color
+        pygame.draw.line(self.screen, color, (start_x, start_y), (self.x, self.y), 2)
     def left(self, angle):
         # Turn left by adjusting the angle counterclockwise
         self.angle = (self.angle + angle) % 360
     def right(self, angle):
         # Turn left by adjusting the angle counterclockwise
         self.angle = (self.angle - angle) % 360
-
+    def coord(self):
+        print("(", self.x, ", ", self.y, ")")
 class Behav(Turtle):
     
 # Main loop
@@ -65,15 +63,18 @@ pygame.display.set_caption("Turtle Style Drawing")
 # Colors
 white = (255, 255, 255)
 black = (0, 0, 0)
-
+blue = (0,0,255)
+red = (255,0,0)
+green = (0,255,0)
 screen.fill(white)
 turtle = Turtle(screen, screen.get_width() // 2, screen.get_height() // 2)  # Start at the center of the screen
 
 # Draw a square using turtle-style commands
 for _ in range(4):
-    turtle.forward(100)  # Move forward by 100 pixels
+    #turtle.pencolor(white)
+    turtle.forward(100, red)  # Move forward by 100 pixels
     turtle.left(90)  # Turn left by 90 degrees
-
+    turtle.coord()
 # Display the drawing
 pygame.display.flip()
 

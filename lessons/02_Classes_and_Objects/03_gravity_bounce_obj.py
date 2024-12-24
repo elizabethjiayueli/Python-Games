@@ -47,6 +47,10 @@ class Game:
 
         self.players = []
 
+    def spawnplayer(self, player):
+        self.settings.player_start_x = 200
+        self.settings.player_start_y = None
+
     def add_player(self, player):
         self.players.append(player)
 
@@ -74,7 +78,7 @@ class Game:
 class Player:
     """Player class, just a bouncing rectangle"""
 
-    def __init__(self, game: Game):
+    def __init__(self, game: Game, y: int, x: int, color: str):
         self.game = game
         settings = game.settings
 
@@ -130,9 +134,11 @@ class Player:
 
 settings = GameSettings()
 game = Game(settings)
-
 p1 = Player(game)
-game.add_player(p1)
+p2 = Player(game)
 
+game.spawnplayer(p2)
+game.add_player(p1)
+game.add_player(p2)
 
 game.run()
