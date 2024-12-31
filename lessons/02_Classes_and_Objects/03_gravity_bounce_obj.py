@@ -10,11 +10,11 @@ allows for more complex games with multiple objects.
 import pygame
 
 
-class Colors:
-    """Constants for Colors"""
-    WHITE = (255, 255, 255)
-    BLACK = (0, 0, 0)
-    RED = (255, 0, 0)
+
+
+white = (255, 255, 255)
+black = (0, 0, 0)
+red = (255, 0, 0)
 
 
 class GameSettings:
@@ -54,7 +54,6 @@ class Game:
     def add_player(self, player):
         self.players.append(player)
 
-
     def run(self):
         """Main game loop"""
 
@@ -63,11 +62,11 @@ class Game:
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     self.running = False
 
-            self.screen.fill(Colors.WHITE)
+            self.screen.fill(white)
 
             for player in self.players:
                 player.update()
-                player.draw(self.screen)
+                player.draw(self.screen, )
                 
             pygame.display.flip()
             self.clock.tick(60)
@@ -78,21 +77,18 @@ class Game:
 class Player:
     """Player class, just a bouncing rectangle"""
 
-    def __init__(self, game: Game, y: int, x: int, color: str):
+    def __init__(self, game: Game, v_x: int, v_y: int, color: int):
         self.game = game
         settings = game.settings
-
         self.width = settings.player_width
         self.height = settings.player_height
-      
-        self.is_jumping = False
-        self.v_jump = settings.player_jump_velocity
-
         self.y = settings.player_start_y if settings.player_start_y is not None else settings.height - self.height
         self.x = settings.player_start_x
-        
-        self.v_x = settings.player_v_x  # X Velocity
-        self.v_y = settings.player_v_y  # Y Velocity
+        self.is_jumping = False
+        self.v_jump = settings.player_jump_velocity
+        self.v_x = v_x
+        self.v_y = v_y
+        self.color = color
 
     def update(self):
         """Update player position, continuously jumping"""
@@ -120,7 +116,7 @@ class Player:
         elif self.x >= self.game.settings.width - self.width:
             self.x = self.game.settings.width - self.width
             self.v_x = -self.v_x
-
+    
     def update_jump(self):
         """Handle the player's jumping logic"""
         
@@ -129,15 +125,14 @@ class Player:
             self.is_jumping = True
 
     def draw(self, screen):
-        pygame.draw.rect(screen, Colors.BLACK, (self.x, self.y, self.width, self.height))
+        pygame.draw.rect(screen, self.color, (self.x, self.y+10, self.width, self.height))
 
 
 settings = GameSettings()
 game = Game(settings)
-p1 = Player(game)
-p2 = Player(game)
-
-game.spawnplayer(p2)
+p1 = Player(game, 5, 25, red)
+p2 = Player(game, 10, 20, black)
+#game.spawnplayer(p2)
 game.add_player(p1)
 game.add_player(p2)
 
