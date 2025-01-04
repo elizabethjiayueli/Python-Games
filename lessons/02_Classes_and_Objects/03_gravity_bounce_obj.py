@@ -130,8 +130,8 @@ class Player:
 
 settings = GameSettings()
 game = Game(settings)
-p1 = Player(game, 5, 25, red)
-p2 = Player(game, 10, 20, black)
+p1 = Player(game, 10, 26, red)
+p2 = Player(game, 9, 20, black)
 #game.spawnplayer(p2)
 game.add_player(p1)
 game.add_player(p2)

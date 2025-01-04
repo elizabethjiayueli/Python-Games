@@ -16,7 +16,7 @@ class Colors:
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
     RED = (255, 0, 0)
-    PLAYER_COLOR = (0, 0, 255)
+    PLAYER_COLOR = (100, 200, 200)
     BACKGROUND_COLOR = (255, 255, 255)
 
 
@@ -29,11 +29,12 @@ class GameSettings:
     player_start_x: int = 100
     player_start_y: int = None
     player_v_y: float = 0  # Initial y velocity
-    player_v_x: float = 4  # Initial x velocity
+    player_v_x: float = 0  # Initial x velocity
     player_width: int = 20
     player_height: int = 20
     player_jump_velocity: float = 15
     frame_rate: int = 15
+    player_thrust: int = 5
 
 
 class Game:
@@ -78,7 +79,7 @@ class Player:
     def __init__(self, game: Game):
         self.game = game
         settings = self.game.settings
-
+        
         self.width = settings.player_width
         self.height = settings.player_height
     
@@ -88,8 +89,9 @@ class Player:
         # Player position
         self.pos = pygame.Vector2(settings.player_start_x, 
                                   settings.player_start_y if settings.player_start_y is not None else settings.height - self.height)
-        
+        self.thrust = pygame.Vector2(0, -settings.player_thrust)
         # Player's velocity
+        
         self.vel = pygame.Vector2(settings.player_v_x, settings.player_v_y)  # Velocity vector
 
 
@@ -141,7 +143,19 @@ class Player:
         self.update_jump()
         self.update_v()
         self.update_pos()
-        
+        self.update_input()
+
+    def update_input(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            self.vel += self.thrust
+
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+            player_v_x -= settings.jump_x_velocity
+            player_v_y = -settings.jump_y_velocity
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+            player_v_x += settings.jump_x_velocity
+            player_v_y = -settings.jump_y_velocity
     def update_v(self):
         """Update the player's velocity based on gravity and bounce on edges"""
          
@@ -152,7 +166,7 @@ class Player:
 
         if self.at_top() and self.going_up():
             self.vel.y = -self.vel.y # Bounce off the top. 
-
+        
         # If the player hits one side of the screen or the other, bounce the
         # player. we are also checking if the player has a velocity going farther
         # off the screeen, because we don't want to bounce the player if it's
@@ -163,8 +177,9 @@ class Player:
             
     def update_pos(self):
         """Update the player's position based on velocity"""
-        self.pos += self.vel  # Update the player's position based on the current velocity
-
+        drag = -self.vel *0.0474
+        self.pos += self.vel + drag # Update the player's position based on the current velocity
+        
         # If the player is at the bottom, stop the player from falling and
         # stop the jump
         
@@ -187,10 +202,10 @@ class Player:
         
         # Notice that we've gotten rid of self.is_jumping, because we can just
         # check if the player is at the bottom. 
-        if self.at_bottom():
-            self.vel += self.v_jump
+        # if self.at_bottom():
+        #     self.vel += self.v_jump
          
-
+        
     def draw(self, screen):
         pygame.draw.rect(screen, Colors.PLAYER_COLOR, (self.pos.x, self.pos.y, self.width, self.height))
 

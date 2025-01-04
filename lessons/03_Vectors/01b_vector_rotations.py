@@ -18,14 +18,14 @@ Vector20, draw_v20, draw_grid = Vector20Factory(screen_width, screen_height, 20)
 draw_grid(screen)
 
 # Create some vectors
-v0 = Vector20(0,0)
+v0 = Vector20(5,5)
 v1 = Vector20(0,1) # 1 length up
-
+v2 = v1.rotate(90)
 v1_scaled = v1 * 5
 start = draw_v20(screen, v0, v1_scaled)
 
-v1_rotated = v1.rotate(135) * 10 
-start = draw_v20(screen, v0, v1_rotated)
+v1_rotated = v1.rotate(90) * 10 
+start = draw_v20(screen, v1_rotated, v2)
 
 # Update display
 pygame.display.flip()
