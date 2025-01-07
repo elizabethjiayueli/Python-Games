@@ -32,7 +32,8 @@ class GameSettings:
     player_v_x: float = 0  # Initial x velocity
     player_width: int = 20
     player_height: int = 20
-    player_jump_velocity: float = 15
+    player_x_vel= pygame.Vector2(1, 0)
+    player_jump_velocity= pygame.Vector2(5,0)
     frame_rate: int = 15
     player_thrust: int = 5
 
@@ -84,7 +85,7 @@ class Player:
         self.height = settings.player_height
     
         # Vector for our jump velocity, which is just up
-        self.v_jump = pygame.Vector2(0, -settings.player_jump_velocity)
+        self.v_jump = pygame.Vector2(0, -15)
 
         # Player position
         self.pos = pygame.Vector2(settings.player_start_x, 
@@ -149,13 +150,13 @@ class Player:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
             self.vel += self.thrust
-
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            player_v_x -= settings.jump_x_velocity
-            player_v_y = -settings.jump_y_velocity
+            print("keys")
+            self.v_jump -= settings.player_jump_velocity
+            self.pos = settings.player_x_vel
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            player_v_x += settings.jump_x_velocity
-            player_v_y = -settings.jump_y_velocity
+            self.v_jump += settings.player_jump_velocity
+            self.pos = settings.player_x_vel
     def update_v(self):
         """Update the player's velocity based on gravity and bounce on edges"""
          
@@ -202,8 +203,8 @@ class Player:
         
         # Notice that we've gotten rid of self.is_jumping, because we can just
         # check if the player is at the bottom. 
-        # if self.at_bottom():
-        #     self.vel += self.v_jump
+        if self.at_bottom():
+            self.vel += self.v_jump
          
         
     def draw(self, screen):

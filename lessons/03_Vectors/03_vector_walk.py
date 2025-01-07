@@ -112,7 +112,7 @@ def main():
         if key_limit%3 == 0: # Limit frequency of key presses so the user can set exact angles
             if keys[pygame.K_RIGHT]:
                 player.direction_vector = player.direction_vector.rotate(-Settings.ANGLE_CHANGE)
-            elif keys[pygame.K_LEFT]:
+            elif keys[pygame.K_LEFT]: 
                 player.direction_vector = player.direction_vector.rotate(Settings.ANGLE_CHANGE)
                 
         if keys[pygame.K_UP]:

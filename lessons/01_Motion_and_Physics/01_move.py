@@ -94,7 +94,7 @@ def main():
         screen.fill(BACKGROUND_COLOR)
 
         # Draw the square
-        pygame.draw.circle(screen, SQUARE_COLOR, (square_x, square_y), 10)
+        pygame.draw.circle(screen, SQUARE_COLOR, (square_x, square_y), 100)
 
         # Update the display. Imagine that the screen is two different whiteboards. One
         # whiteboard is currently visible to the player, and the other whiteboard is being

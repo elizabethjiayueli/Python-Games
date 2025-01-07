@@ -9,6 +9,7 @@ class Settings:
     height = 600
     fps = 60
     triangle_size = 20
+    triangle_speed = 5
     projectile_speed = 5
     projectile_size = 11
     shoot_delay = 250  # 250 milliseconds between shots, or 4 shots per second
@@ -95,6 +96,9 @@ class Spaceship(pygame.sprite.Sprite):
 
         if keys[pygame.K_SPACE] and self.ready_to_shoot():
             self.fire_projectile()
+
+        if keys[pygame.K_UP]:
+            self.position += settings.triangle_speed
 
         self.image = pygame.transform.rotate(self.original_image, -self.angle)
 
