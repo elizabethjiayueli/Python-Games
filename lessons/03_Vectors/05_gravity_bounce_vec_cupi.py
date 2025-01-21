@@ -20,7 +20,7 @@ class Settings:
     BACKGROUND_COLOR = (255, 255, 255)
     TEXT_COLOR = (0, 0, 0)
     FPS = 30
-    ANGLE_CHANGE = 3
+    ANGLE_CHANGE = 10
     LENGTH_CHANGE = 5
     INITIAL_LENGTH = 100
     FONT_SIZE = 24
@@ -49,9 +49,9 @@ class GameSettings:
     player_width: int = 20
     player_height: int = 20
     player_x_vel= pygame.Vector2(10, 0)
-    player_jump_velocity= pygame.Vector2(5,0)
-    frame_rate: int = 15
-    player_thrust: int = 5
+    player_jump_velocity= pygame.Vector2(10,0)
+    frame_rate: int = 30
+    player_thrust: int = 3
 
 
 class Game:
@@ -92,7 +92,7 @@ class Game:
 
 class Player:
     """Player class, just a bouncing rectangle"""
-
+    
     def __init__(self, game: Game):
         self.game = game
         settings = self.game.settings
@@ -101,14 +101,14 @@ class Player:
         self.height = settings.player_height
     
         # Vector for our jump velocity, which is just up
-        self.v_jump = pygame.Vector2(0, -15)
-
+        self.v_jump = pygame.Vector2(10, -15)
+        self.moving = False
         # Player position
         self.pos = pygame.Vector2(settings.player_start_x, 
                                   settings.player_start_y if settings.player_start_y is not None else settings.height - self.height)
         self.thrust = pygame.Vector2(2, -settings.player_thrust)
         # Player's velocity
-        self.direction_vector = pygame.math.Vector2(Settings.INITIAL_LENGTH, 0)  # Initial direction vector
+        self.direction_vector = pygame.math.Vector2(Settings.INITIAL_LENGTH+2, 0)  # Initial direction vector
         self.vel = pygame.Vector2(settings.player_v_x, settings.player_v_y)  # Velocity vector
 
 
@@ -153,34 +153,38 @@ class Player:
         """Check if the player is at the right of the screen"""
         return self.pos.x >= self.game.settings.width - self.width
     def move(self):
-        """Moves the player in the direction of the current angle."""
+        # end_position = self.pos + self.direction_vector
+        # """Moves the player in the direction of the current angle."""
+        # self.pos.x == end_position
+        # self.pos.y == end_position
         
-        
-        init_position = self.position # Save the initial position for the animation
+        init_position = self.pos # Save the initial position for the animation
         
         # Calculate the final position after moving. Its just addition!
-        final_position = self.position + self.direction_vector
+        final_position = self.pos + self.direction_vector
         
         # The rest is just for animation
         length = self.direction_vector.length()
         N = int(length // 3)
-        step = (final_position - self.position) / N
+        step = (final_position - self.pos) / N
        
         for i in range(N):
-            self.position += step
+            self.pos += step
             screen.fill(Settings.BACKGROUND_COLOR)
             self.draw(show_line=False)
             pygame.draw.line(screen, Settings.LINE_COLOR, init_position, final_position, 2)
             pygame.display.flip()
             clock.tick(Settings.FPS)
+        self.moving = False
     # Updates
     
     def update(self):
         """Update player position, continuously jumping"""
-        self.update_jump()
-        self.update_v()
-        self.update_pos()
-        self.update_input()
+        if not self.moving: 
+            self.update_jump()
+            self.update_v()
+            self.update_pos()
+            self.update_input()
 
     def update_input(self):
         keys = pygame.key.get_pressed()
@@ -196,7 +200,7 @@ class Player:
         
         key_limit = 0
         key_limit += 1    
-        if key_limit%3 == 0: # Limit frequency of key presses so the user can set exact angles
+        if key_limit%3 == 1: # Limit frequency of key presses so the user can set exact angles
             if keys[pygame.K_d]:
                 self.direction_vector = self.direction_vector.rotate(-Settings.ANGLE_CHANGE)
             elif keys[pygame.K_a]: 
@@ -206,11 +210,14 @@ class Player:
             self.direction_vector.scale_to_length(self.direction_vector.length() + Settings.LENGTH_CHANGE)
         elif keys[pygame.K_s]:
             self.direction_vector.scale_to_length(self.direction_vector.length() - Settings.LENGTH_CHANGE)
-        elif keys[pygame.K_KP_ENTER]:
+        elif keys[pygame.K_RETURN]:
             self.move()
+            # self.moving = True
+            
+            
     def update_v(self):
         """Update the player's velocity based on gravity and bounce on edges"""
-         
+        
         self.vel += self.game.gravity  # Add gravity to the velocity
 
         if self.at_bottom() and self.going_down():
@@ -258,8 +265,8 @@ class Player:
             #self.vel += self.v_jump
          
         
-        self.position = pygame.math.Vector2(settings.player_start_x, 
-                                  settings.player_start_y if settings.player_start_y is not None else settings.height - self.height)
+        # self.pos = pygame.math.Vector2(settings.player_start_x, 
+        #                           settings.player_start_y if settings.player_start_y is not None else settings.height - self.height)
         
 
     def draw(self, show_line=True):
@@ -267,10 +274,10 @@ class Player:
         #pygame.draw.rect(screen, Settings.PLAYER_COLOR, (self.position.x - Settings.PLAYER_SIZE // 2, self.position.y - Settings.PLAYER_SIZE // 2, Settings.PLAYER_SIZE, Settings.PLAYER_SIZE))
         
         # The end position of the direction vector is the player's position plus the direction vector
-        end_position = self.pos + self.direction_vector
-        
+        self_center = pygame.math.Vector2(self.pos.x + self.width/2, self.pos.y + self.height/2)
+        end_position = self_center + self.direction_vector
         if show_line:
-            pygame.draw.line(screen, Settings.LINE_COLOR, self.pos, end_position, 2)
+            pygame.draw.line(screen, Settings.LINE_COLOR, self_center, end_position, 3)
 
         pygame.draw.rect(screen, Colors.PLAYER_COLOR, (self.pos.x, self.pos.y, self.width, self.height))
         #pygame.draw.line(screen, Settings.LINE_COLOR, self.position, end_position, 2)

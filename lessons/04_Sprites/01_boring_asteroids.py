@@ -21,14 +21,18 @@ class Spaceship:
         self.settings = settings
         self.position = pygame.Vector2(self.settings.width // 2, self.settings.height // 2)
         self.angle = 0
-
+        # self.point = self.position + 
+        self.vel = pygame.math.Vector2(0, 2)
     def handle_input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.angle -= 5
         if keys[pygame.K_RIGHT]:
             self.angle += 5
-
+        if keys[pygame.K_UP]:
+            self.position -= self.vel.rotate(self.angle)
+        if keys[pygame.K_DOWN]:
+            self.position += self.vel.rotate(self.angle)
     def draw(self, surface):
         points = [
             pygame.Vector2(0, -self.settings.triangle_size),  # top point

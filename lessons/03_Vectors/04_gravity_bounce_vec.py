@@ -34,7 +34,7 @@ class GameSettings:
     player_height: int = 20
     player_x_vel= pygame.Vector2(10, 0)
     player_jump_velocity= pygame.Vector2(5,0)
-    frame_rate: int = 15
+    frame_rate: int = 30
     player_thrust: int = 5
 
 

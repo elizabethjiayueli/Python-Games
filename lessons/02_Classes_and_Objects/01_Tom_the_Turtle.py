@@ -86,7 +86,7 @@ for _ in range(4):
     turtle.left(90)  # Turn left by 90 degrees
     turtle.coord()
 turtle.penup()
-turtle.left(90)
+turtle.left(150)
 turtle.forward(100)
 turtle.pendown(red)
 print(turtle.color)
