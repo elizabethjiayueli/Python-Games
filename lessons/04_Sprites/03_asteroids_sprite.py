@@ -10,7 +10,7 @@ class Settings:
     """Class to store game configuration."""
 
     width = 800
-    height = 600
+    height = 800
     fps = 60
     triangle_size = 20
     triangle_speed = 5
@@ -89,7 +89,15 @@ class Spaceship(pygame.sprite.Sprite):
     # we also need to call the update method of the parent class, so we use
     # super().update()
     def update(self):
-        
+        if self.rect.center[0] >= 800:
+            self.rect.center = (0, self.rect.center[1])
+        if self.rect.center[0] <= 0:
+            self.rect.center = (800, self.rect.center[1])
+
+        if self.rect.center[1] >= 800:
+            self.rect.center = (self.rect.center[0], 0)
+        if self.rect.center[1] <= 0:
+            self.rect.center = (self.rect.center[0], 0)
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LEFT]:
@@ -233,7 +241,7 @@ if __name__ == "__main__":
     game = Game(settings)
 
     spaceship = AlienSpaceship(
-        settings, position=(settings.width // 2, settings.height // 2)
+        settings, position=(settings.width//2 , settings.height// 2)
     )
 
     game.add(spaceship)

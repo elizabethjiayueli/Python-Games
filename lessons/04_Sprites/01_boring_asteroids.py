@@ -1,6 +1,9 @@
 import pygame
 import math
+from pathlib import Path
 
+
+assets = Path(__file__).parent / "images"
 # Settings class to store game configuration
 class Settings:
     def __init__(self):
@@ -14,12 +17,26 @@ class Settings:
             'black': (0, 0, 0),
             'red': (255, 0, 0)
         }
-
 # Spaceship class to handle player movement and drawing
-class Spaceship:
+class Spaceship(pygame.sprite.Sprite):
+    """Class representing the spaceship."""
+
     def __init__(self, settings):
+        super().__init__()
+
+        ...
+
+        self.angle = 0
+        self.original_image = self.create_spaceship_image()
+
+        # For Sprites, the image and rect attributes are part of the Sprite class
+        # and are important. The image is the surface that will be drawn on the screen
         self.settings = settings
+        self.image = self.original_image
         self.position = pygame.Vector2(self.settings.width // 2, self.settings.height // 2)
+        self.rect = self.image.get_rect(center=self.position)
+        
+        
         self.angle = 0
         # self.point = self.position + 
         self.vel = pygame.math.Vector2(0, 2)
@@ -54,18 +71,38 @@ class Projectile:
 
     def draw(self, surface):
         pygame.draw.circle(surface, self.settings.colors['red'], (int(self.position.x), int(self.position.y)), 5)
-
+class AlienSpaceship(Spaceship):
+    
+    def create_spaceship_image(self):
+        """Creates the spaceship shape as a surface."""
+        
+        return pygame.image.load(assets/'alien2.gif')
 # Game class to manage the game loop and objects
 class Game:
+    """Class to manage the game loop and objects."""
+
     def __init__(self):
+        self.all_sprites = pygame.sprite.Group()
         pygame.init()
         self.settings = Settings()
         self.screen = pygame.display.set_mode((self.settings.width, self.settings.height))
         pygame.display.set_caption("Really Boring Asteroids")
         self.clock = pygame.time.Clock()
         self.running = True
-        self.spaceship = Spaceship(self.settings)
+        self.spaceship = AlienSpaceship(self.settings)
         self.projectiles = []
+    def add(self, sprite):
+
+        self.all_sprites.add(sprite)
+
+    ...
+
+ 
+        
+
+        
+    
+        
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -80,7 +117,7 @@ class Game:
     def update(self):
         # Update spaceship
         self.spaceship.handle_input()
-
+        self.all_sprites.update()
         # Update projectiles
         for projectile in self.projectiles[:]:
             projectile.move()
@@ -93,7 +130,7 @@ class Game:
         for projectile in self.projectiles:
             projectile.draw(self.screen)
         pygame.display.flip()
-
+        self.all_sprites.draw(self.screen)
     def run(self):
         while self.running:
             self.handle_events()
