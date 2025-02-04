@@ -69,7 +69,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         # Turn Gravity into a vector
-        self.gravity = pygame.Vector2(0, self.settings.gravity)
+        
 
     def run(self):
         """Main game loop"""

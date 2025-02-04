@@ -9,8 +9,8 @@ import math
 class Settings:
     """Class to store game configuration."""
 
-    width = 800
-    height = 800
+    width = 600
+    height = 600
     fps = 60
     triangle_size = 20
     triangle_speed = 5
@@ -83,21 +83,24 @@ class Spaceship(pygame.sprite.Sprite):
         self.game.add(new_projectile)
 
 
+
     # The Sprite class defines an update method that is called every frame. We
     # can override this method to add our own functionality. In this case, we
     # are going to handle input and update the image of the spaceship. However,
     # we also need to call the update method of the parent class, so we use
     # super().update()
     def update(self):
-        if self.rect.center[0] >= 800:
+        if self.rect.center[0] > 600:
+            print("x")
             self.rect.center = (0, self.rect.center[1])
-        if self.rect.center[0] <= 0:
-            self.rect.center = (800, self.rect.center[1])
+        if self.rect.center[0] < 0:
+            self.rect.center = (600, self.rect.center[1])
 
-        if self.rect.center[1] >= 800:
+        if self.rect.center[1] > 800:
+            print("x")
             self.rect.center = (self.rect.center[0], 0)
-        if self.rect.center[1] <= 0:
-            self.rect.center = (self.rect.center[0], 0)
+        if self.rect.center[1] < 0:
+            self.rect.center = (self.rect.center[0], 800)
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LEFT]:
@@ -163,10 +166,19 @@ class Projectile(pygame.sprite.Sprite):
 
         # Notice that we are using the rect attribute to store the position of the projectile
         self.rect = self.image.get_rect(center=position)
-
+        
     def update(self):
         self.rect.center += self.velocity
+        if self.rect[0] > 589:
+            self.kill()
+            print("x")
+        if self.rect[0] < 0:
+            self.kill()
 
+        if self.rect[1] > 800:
+            self.kill()
+        if self.rect[1] < 0:
+            self.kill()
 class AlienSpaceship(Spaceship):
     
     def create_spaceship_image(self):

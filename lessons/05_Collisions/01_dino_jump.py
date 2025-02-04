@@ -1,7 +1,7 @@
 """
 Dino Jump
 
-Use the arrow keys to move the blue square up and down to avoid the black
+Use the arrow keys to move the blue square up and down to avoid the Settings.
 obstacles. The game should end when the player collides with an obstacle ...
 but it does not. It's a work in progress, and you'll have to finish it. 
 
@@ -15,47 +15,60 @@ pygame.init()
 
 images_dir = Path(__file__).parent / "images" if (Path(__file__).parent / "images").exists() else Path(__file__).parent / "assets"
 
-# Screen dimensions
-WIDTH, HEIGHT = 600, 300
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+class Settings:
+    WIDTH, HEIGHT = 600, 300
+    
+
+    # Colors
+    BLUE = (0, 0, 255)
+    BLACK = (0, 0, 0)
+    WHITE = (255, 255, 255)
+
+    # Settings.FPS
+    FPS = 60
+
+    # Player attributes
+    PLAYER_SIZE = 25
+
+    player_speed = 5
+
+    # Obstacle attributes
+    OBSTACLE_WIDTH = 20
+    OBSTACLE_HEIGHT = 20
+    obstacle_speed = 5
+
+    # Font
+    font = pygame.font.SysFont(None, 36)
+    #Gravity stuff
+    
+    gravity: float = 0.3
+    player_start_x: int = 100
+    player_start_y: int = None
+    player_v_y: float = 0  # Initial y velocity
+    player_v_x: float = 0  # Initial x velocity
+    player_width: int = 20
+    player_height: int = 20
+    player_x_vel= 10
+    player_jump_velocity= 10
+    frame_rate: int = 30
+    player_thrust: int = 3
+
+screen = pygame.display.set_mode((Settings.WIDTH, Settings.HEIGHT))
 pygame.display.set_caption("Dino Jump")
-
-# Colors
-BLUE = (0, 0, 255)
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-
-# FPS
-FPS = 60
-
-# Player attributes
-PLAYER_SIZE = 25
-
-player_speed = 5
-
-# Obstacle attributes
-OBSTACLE_WIDTH = 20
-OBSTACLE_HEIGHT = 20
-obstacle_speed = 5
-
-# Font
-font = pygame.font.SysFont(None, 36)
-
-
 # Define an obstacle class
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.Surface((OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
-        self.image.fill(BLACK)
+        self.image = pygame.Surface((Settings.OBSTACLE_WIDTH, Settings.OBSTACLE_HEIGHT))
+        self.image.fill(Settings.BLACK)
         self.rect = self.image.get_rect()
-        self.rect.x = WIDTH
-        self.rect.y = HEIGHT - OBSTACLE_HEIGHT - 10
+        self.rect.x = Settings.WIDTH
+        self.rect.y = Settings.HEIGHT - Settings.OBSTACLE_HEIGHT - 10
 
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
 
     def update(self):
-        self.rect.x -= obstacle_speed
+        self.rect.x -= Settings.obstacle_speed
         # Remove the obstacle if it goes off screen
         if self.rect.right < 0:
             self.kill()
@@ -65,7 +78,7 @@ class Obstacle(pygame.sprite.Sprite):
         
         # Load the explosion image
         self.image = self.explosion
-        self.image = pygame.transform.scale(self.image, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
+        self.image = pygame.transform.scale(self.image, (Settings.OBSTACLE_WIDTH, Settings.OBSTACLE_HEIGHT))
         self.rect = self.image.get_rect(center=self.rect.center)
 
 
@@ -73,25 +86,29 @@ class Obstacle(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE))
-        self.image.fill(BLUE)
+        self.image = pygame.Surface((Settings.PLAYER_SIZE, Settings.PLAYER_SIZE))
+        self.image.fill(Settings.BLUE)
         self.rect = self.image.get_rect()
         self.rect.x = 50
-        self.rect.y = HEIGHT - PLAYER_SIZE - 10
-        self.speed = player_speed
-
+        self.rect.y = Settings.HEIGHT - Settings.PLAYER_SIZE - 10
+        self.speed = Settings.player_speed
+        
     def update(self):
+        
+
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_UP]:
-            self.rect.y -= self.speed
+        if keys[pygame.K_SPACE]:
+            
+            self.rect.y -= 5
         if keys[pygame.K_DOWN]:
-            self.rect.y += self.speed
+            self.rect.y += 5
+        #Settings.player_x_vel += Settings.gravity  # Add gravity to the velocity
 
         # Keep the player on screen
         if self.rect.top < 0:
             self.rect.top = 0
-        if self.rect.bottom > HEIGHT:
-            self.rect.bottom = HEIGHT
+        if self.rect.bottom > Settings.HEIGHT:
+            self.rect.bottom = Settings.HEIGHT
 
 # Create a player object
 player = Player()
@@ -114,7 +131,7 @@ def add_obstacle(obstacles):
 
 
 # Main game loop
-def game_loop():
+def Game():
     clock = pygame.time.Clock()
     game_over = False
     last_obstacle_time = pygame.time.get_ticks()
@@ -123,7 +140,8 @@ def game_loop():
     obstacles = pygame.sprite.Group()
 
     player = Player()
-
+    player = Player()
+    player_group = pygame.sprite.GroupSingle(player)
     obstacle_count = 0
 
     while not game_over:
@@ -148,19 +166,19 @@ def game_loop():
             collider[0].explode()
        
         # Draw everything
-        screen.fill(WHITE)
-        pygame.draw.rect(screen, BLUE, player)
+        screen.fill(Settings.WHITE)
+        pygame.draw.rect(screen, Settings.BLUE, player)
         obstacles.draw(screen)
 
         # Display obstacle count
-        obstacle_text = font.render(f"Obstacles: {obstacle_count}", True, BLACK)
+        obstacle_text = Settings.font.render(f"Obstacles: {obstacle_count}", True, Settings.HEIGHT)
         screen.blit(obstacle_text, (10, 10))
 
         pygame.display.update()
-        clock.tick(FPS)
+        clock.tick(Settings.FPS)
 
     # Game over screen
-    screen.fill(WHITE)
+    screen.fill(Settings.WHITE)
 
 if __name__ == "__main__":
-    game_loop()
+    Game()
