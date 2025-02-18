@@ -74,7 +74,7 @@ black = (0, 0, 0)
 blue = (0,0,255)
 red = (255,0,0)
 green = (0,255,0)
-fillscreen = white
+fillscreen = red
 screen.fill(fillscreen)
 turtle = Turtle(screen, screen.get_width() // 2, screen.get_height() // 2, black)  # Start at the center of the screen
 
@@ -86,7 +86,7 @@ for _ in range(4):
     turtle.left(90)  # Turn left by 90 degrees
     turtle.coord()
 turtle.penup()
-turtle.left(150)
+turtle.left(90)
 turtle.forward(100)
 turtle.pendown(red)
 print(turtle.color)
