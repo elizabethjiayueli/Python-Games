@@ -5,7 +5,8 @@ assets = Path(__file__).parent / "images"
 import pygame
 import math
 import random
-
+from pathlib import Path
+images_dir = Path(__file__).parent / "images" if (Path(__file__).parent / "images").exists() else Path(__file__).parent / "assets"
 class Settings:
     """Class to store game configuration."""
 
@@ -18,7 +19,8 @@ class Settings:
     projectile_size = 11
     shoot_delay = 1  # 250 milliseconds between shots, or 4 shots per second
     colors = {"white": (255, 255, 255), "black": (0, 0, 0), "red": (255, 0, 0)}
-
+    OBSTACLE_HEIGHT = 20
+    green = (0,255,0)
 
 # Notice that this Spaceship class is a bit different: it is a subclass of
 # Sprite. Rather than a plain class, like in the previous examples, this class
@@ -140,10 +142,10 @@ class Projectile(pygame.sprite.Sprite):
 
     def __init__(self, settings, position, velocity, angle):
         super().__init__()
-
+        #self.rect = self.image.get_rect(center=position)
         self.game = None  # will be set in Game.add()
         self.settings = settings
-
+        
         # The (0,-1) part makes the vector point up, and the rotate method
         # rotates the vector by the given angle. Finally, we multiply the vector
         # by the velocity (scalar) to get the final velocity vector.
@@ -154,7 +156,7 @@ class Projectile(pygame.sprite.Sprite):
             (self.settings.projectile_size, self.settings.projectile_size),
             pygame.SRCALPHA,
         )
-
+        self.rect = self.image.get_rect(center=position)
         half_size = self.settings.projectile_size // 2
 
         pygame.draw.circle(
@@ -165,7 +167,7 @@ class Projectile(pygame.sprite.Sprite):
         )
 
         # Notice that we are using the rect attribute to store the position of the projectile
-        self.rect = self.image.get_rect(center=position)
+        
         
     def update(self):
         self.rect.center += self.velocity
@@ -187,8 +189,8 @@ class Obstacle(pygame.sprite.Sprite):
         
         self.image = pygame.transform.scale(self.original_image, (40, 70))
         self.rect = self.image.get_rect()
-        self.rect.x = Settings.WIDTH
-        self.rect.y = Settings.HEIGHT - Settings.OBSTACLE_HEIGHT - 40
+        self.rect.x = Settings.width
+        self.rect.y = Settings.height - Settings.OBSTACLE_HEIGHT - 40
         
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
 
@@ -214,11 +216,11 @@ def add_obstacle(obstacles):
     # The combination of the randomness and the time allows for random
     # obstacles, but not too close together. 
     
-    if random.random() < 0.5 :
+    if random.random() < 1 :
         obstacle = Obstacle()
         obstacles.add(obstacle)
         return 1
-    return 0
+    return 0 
 
 
 class AlienSpaceship(Spaceship):
@@ -226,14 +228,15 @@ class AlienSpaceship(Spaceship):
     def create_spaceship_image(self):
         """Creates the spaceship shape as a surface."""
         
-        return pygame.image.load('lessons/04_Sprites/images/alien2.gif')
+        return pygame.image.load(assets/'alien2.gif')
 class Game:
     """Class to manage the game loop and objects."""
 
     def __init__(self, settings):
         pygame.init()
         pygame.key.set_repeat(1250, 1250)
-        
+        self.obstacles = pygame.sprite.Group()
+        self.projectiles = pygame.sprite.Group()
         self.settings = settings
         self.screen = pygame.display.set_mode((self.settings.width, self.settings.height))
         
@@ -257,7 +260,14 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+        
 
+        #Check for collisions
+        for projectile in self.projectiles:
+            collider = pygame.sprite.spritecollide(projectile, self.obstacles, dokill=False)
+            if collider:
+                collider[0].explode()
+                
     def update(self):
 
         # We only need to call the update method of the group, and it will call
@@ -271,6 +281,7 @@ class Game:
         # The sprite group has a draw method that will draw all of the sprites in
         # the group.
         self.all_sprites.draw(self.screen)
+        pygame.draw.rect(self.screen, Settings.green, (20, 20, 125, 20))
 
         pygame.display.flip()
 
@@ -299,5 +310,5 @@ if __name__ == "__main__":
     )
 
     game.add(spaceship)
-
+    add_obstacle(game.obstacles)
     game.run()

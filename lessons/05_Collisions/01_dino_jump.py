@@ -12,7 +12,7 @@ import pygame
 import random
 from pathlib import Path
 
-# Initialize Pygame
+# Initialize Pygame 
 pygame.init()
 
 images_dir = Path(__file__).parent / "images" if (Path(__file__).parent / "images").exists() else Path(__file__).parent / "assets"
@@ -44,7 +44,7 @@ class Settings:
     #Gravity stuff
     
     gravity: int = 1
-    jump_y_velocity: int = 18
+    jump_y_velocity: int = 100 
     jump_x_velocity: int = 10
     player_x_velocity = 0
     player_y_velocity = 0
@@ -56,10 +56,11 @@ class Obstacle(pygame.sprite.Sprite):
         super().__init__()
         self.original_image = pygame.image.load(assets/'cactus_9.png')
         
-        self.image = pygame.transform.scale(self.original_image, (40, 70))
+        self.image = pygame.transform.scale(self.original_image, (100, 200))
         self.rect = self.image.get_rect()
         self.rect.x = Settings.WIDTH
-        self.rect.y = Settings.HEIGHT - Settings.OBSTACLE_HEIGHT - 40
+        self.rect.y = Settings.HEIGHT - Settings.OBSTACLE_HEIGHT - 180
+
         
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
 
@@ -97,7 +98,7 @@ class Player(pygame.sprite.Sprite):
 
         keys = pygame.key.get_pressed()  
         if self.rect.bottom == Settings.HEIGHT:
-            if keys[pygame.K_SPACE]:
+            if keys[pygame.K_SPACE] or keys[pygame.K_UP]:
                 self.y_vel = -Settings.jump_y_velocity
             
              
@@ -124,7 +125,7 @@ def add_obstacle(obstacles):
     # The combination of the randomness and the time allows for random
     # obstacles, but not too close together. 
     
-    if random.random() < 0.5 :
+    if random.random() < 0.4 :
         obstacle = Obstacle()
         obstacles.add(obstacle)
         return 1
