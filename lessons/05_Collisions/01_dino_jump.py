@@ -44,7 +44,7 @@ class Settings:
     #Gravity stuff
     
     gravity: int = 1
-    jump_y_velocity: int = 100 
+    jump_y_velocity: int = 17
     jump_x_velocity: int = 10
     player_x_velocity = 0
     player_y_velocity = 0
@@ -56,10 +56,10 @@ class Obstacle(pygame.sprite.Sprite):
         super().__init__()
         self.original_image = pygame.image.load(assets/'cactus_9.png')
         
-        self.image = pygame.transform.scale(self.original_image, (100, 200))
+        self.image = pygame.transform.scale(self.original_image, (40, 70))
         self.rect = self.image.get_rect()
         self.rect.x = Settings.WIDTH
-        self.rect.y = Settings.HEIGHT - Settings.OBSTACLE_HEIGHT - 180
+        self.rect.y = Settings.HEIGHT - Settings.OBSTACLE_HEIGHT - 45
 
         
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
@@ -89,7 +89,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.original_image, (30, 35))
         self.rect = self.image.get_rect()
         self.rect.x = 50
-        self.rect.y = Settings.HEIGHT - Settings.PLAYER_SIZE - 10 
+        self.rect.y = Settings.HEIGHT - Settings.PLAYER_SIZE - 7
         self.speed = Settings.player_speed
         self.y_vel = 0
         self.score = 0

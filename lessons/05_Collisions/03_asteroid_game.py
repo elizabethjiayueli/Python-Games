@@ -13,15 +13,16 @@ class Settings:
     width = 600
     height = 600
     fps = 60
-    triangle_size = 20
+    triangle_size = 20 
     triangle_speed = 5
     projectile_speed = 5
     projectile_size = 11
-    shoot_delay = 1  # 250 milliseconds between shots, or 4 shots per second
+    shoot_delay = 0         # 250 milliseconds between shots, or 4 shots per second
     colors = {"white": (255, 255, 255), "black": (0, 0, 0), "red": (255, 0, 0)}
     OBSTACLE_HEIGHT = 20
     green = (0,255,0)
-
+    white = (255,255,255)
+    obstacle_speed = 5
 # Notice that this Spaceship class is a bit different: it is a subclass of
 # Sprite. Rather than a plain class, like in the previous examples, this class
 # inherits from the Sprite class. The main additional function of a Sprite is
@@ -173,7 +174,7 @@ class Projectile(pygame.sprite.Sprite):
         self.rect.center += self.velocity
         if self.rect[0] > 589:
             self.kill()
-            print("x")
+            
         if self.rect[0] < 0:
             self.kill()
 
@@ -218,7 +219,7 @@ def add_obstacle(obstacles):
     
     if random.random() < 1 :
         obstacle = Obstacle()
-        obstacles.add(obstacle)
+        Game.obstacles.add(obstacle)
         return 1
     return 0 
 
@@ -261,7 +262,7 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
         
-
+        self.obstacles.update()
         #Check for collisions
         for projectile in self.projectiles:
             collider = pygame.sprite.spritecollide(projectile, self.obstacles, dokill=False)
@@ -282,13 +283,17 @@ class Game:
         # the group.
         self.all_sprites.draw(self.screen)
         pygame.draw.rect(self.screen, Settings.green, (20, 20, 125, 20))
-
+    
         pygame.display.flip()
 
     def run(self):
         """Main Loop for the game."""
-        
-       
+        settings = Settings()
+
+        game = Game(settings)
+        spaceship = AlienSpaceship(
+        settings, position=(settings.width//2 , settings.height// 2)
+        )
         
         while self.running:
             self.handle_events()
@@ -301,13 +306,9 @@ class Game:
 
 if __name__ == "__main__":
 
-    settings = Settings()
-
-    game = Game(settings)
-
-    spaceship = AlienSpaceship(
-        settings, position=(settings.width//2 , settings.height// 2)
-    )
+    
+    
+    
 
     game.add(spaceship)
     add_obstacle(game.obstacles)
