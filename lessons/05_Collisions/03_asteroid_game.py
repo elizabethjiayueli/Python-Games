@@ -20,9 +20,10 @@ class Settings:
     shoot_delay = 0         # 250 milliseconds between shots, or 4 shots per second
     colors = {"white": (255, 255, 255), "black": (0, 0, 0), "red": (255, 0, 0)}
     OBSTACLE_HEIGHT = 20
+    OBSTACLE_WIDTH = 20
     green = (0,255,0)
     white = (255,255,255)
-    obstacle_speed = 5
+    obstacle_speed = 0
 # Notice that this Spaceship class is a bit different: it is a subclass of
 # Sprite. Rather than a plain class, like in the previous examples, this class
 # inherits from the Sprite class. The main additional function of a Sprite is
@@ -83,8 +84,8 @@ class Spaceship(pygame.sprite.Sprite):
 
         # Important! The game will update all of the sprites in the group, so we
         # need to add the projectile to the group to make sure it is updated.
+        self.game.projectiles.add(new_projectile)
         self.game.add(new_projectile)
-
 
 
     # The Sprite class defines an update method that is called every frame. We
@@ -188,10 +189,10 @@ class Obstacle(pygame.sprite.Sprite):
         super().__init__()
         self.original_image = pygame.image.load(assets/'asteroid1.png')
         
-        self.image = pygame.transform.scale(self.original_image, (40, 70))
+        self.image = pygame.transform.scale(self.original_image, (100, 70))
         self.rect = self.image.get_rect()
-        self.rect.x = Settings.width
-        self.rect.y = Settings.height - Settings.OBSTACLE_HEIGHT - 40
+        self.rect.x = Settings.width - 50
+        self.rect.y = Settings.height - Settings.OBSTACLE_HEIGHT - 300
         
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
 
@@ -200,7 +201,7 @@ class Obstacle(pygame.sprite.Sprite):
         # Remove the obstacle if it goes off screen
         if self.rect.right < 0:
             self.kill()
-
+        
     def explode(self):
         """Replace the image with an explosition image."""
         
@@ -209,19 +210,19 @@ class Obstacle(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (Settings.OBSTACLE_WIDTH, Settings.OBSTACLE_HEIGHT))
         self.rect = self.image.get_rect(center=self.rect.center)
 
-def add_obstacle(obstacles):
-    # random.random() returns a random float between 0 and 1, so a value
-    # of 0.25 means that there is a 25% chance of adding an obstacle. Since
-    # add_obstacle() is called every 100ms, this means that on average, an
-    # obstacle will be added every 400ms.
-    # The combination of the randomness and the time allows for random
-    # obstacles, but not too close together. 
+# def add_obstacle(obstacles_list):
+#     # random.random() returns a random float between 0 and 1, so a value
+#     # of 0.25 means that there is a 25% chance of adding an obstacle. Since
+#     # add_obstacle() is called every 100ms, this means that on average, an
+#     # obstacle will be added every 400ms.
+#     # The combination of the randomness and the time allows for random
+#     # obstacles, but not too close together. 
     
-    if random.random() < 1 :
-        obstacle = Obstacle()
-        Game.obstacles.add(obstacle)
-        return 1
-    return 0 
+#     if random.random() < 1 :
+#         obstacle = Obstacle()
+#         Game.obstacles.add(obstacle)
+#         return 1
+#     return 0 
 
 
 class AlienSpaceship(Spaceship):
@@ -265,11 +266,15 @@ class Game:
         self.obstacles.update()
         #Check for collisions
         for projectile in self.projectiles:
+            
             collider = pygame.sprite.spritecollide(projectile, self.obstacles, dokill=False)
             if collider:
                 collider[0].explode()
+                print("Great Shot!!!!")
                 
     def update(self):
+
+        self.obstacles.update()
 
         # We only need to call the update method of the group, and it will call
         # the update method of all sprites But, we have to make sure to add all
@@ -278,7 +283,7 @@ class Game:
 
     def draw(self):
         self.screen.fill(self.settings.colors["black"])
-
+        self.obstacles.draw(self.screen)
         # The sprite group has a draw method that will draw all of the sprites in
         # the group.
         self.all_sprites.draw(self.screen)
@@ -300,16 +305,35 @@ class Game:
             self.update()
             self.draw()
             self.clock.tick(self.settings.fps)
+    def add_obstacle(self, obstacles):
+        # random.random() returns a random float between 0 and 1, so a value
+        # of 0.25 means that there is a 25% chance of adding an obstacle. Since
+        # add_obstacle() is called every 100ms, this means that on average, an
+        # obstacle will be added every 400ms.
+        # The combination of the randomness and the time allows for random
+        # obstacles, but not too close together. 
+        
+        if random.random() < 1 :
+            obstacle = Obstacle()
+            self.obstacles.add(obstacle)
+            return 1
+        return 0 
 
         pygame.quit()
+        
 
 
 if __name__ == "__main__":
 
     
     
-    
+    settings = Settings()
+
+    game = Game(settings)
+    spaceship = AlienSpaceship(
+    settings, position=(settings.width//2 , settings.height// 2)
+        )
 
     game.add(spaceship)
-    add_obstacle(game.obstacles)
+    game.add_obstacle(game.obstacles)
     game.run()
