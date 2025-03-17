@@ -4,9 +4,11 @@ from pathlib import Path
 assets = Path(__file__).parent / "images"
 import pygame
 import math
+from pygame.math import Vector2
 import random
 from pathlib import Path
 images_dir = Path(__file__).parent / "images" if (Path(__file__).parent / "images").exists() else Path(__file__).parent / "assets"
+pygame.init()
 class Settings:
     """Class to store game configuration."""
 
@@ -17,19 +19,20 @@ class Settings:
     triangle_speed = 5
     projectile_speed = 5
     projectile_size = 11
-    shoot_delay = 0         # 250 milliseconds between shots, or 4 shots per second
+    shoot_delay = 250         # 250 milliseconds between shots, or 4 shots per second
     colors = {"white": (255, 255, 255), "black": (0, 0, 0), "red": (255, 0, 0)}
-    OBSTACLE_HEIGHT = 20
+    OBSTACLE_HEIGHT = 20 
     OBSTACLE_WIDTH = 20
     green = (0,255,0)
     white = (255,255,255)
-    obstacle_speed = 0
+    obstacle_speed = 1
+    font = pygame.font.SysFont("Tahoma", 36)
 # Notice that this Spaceship class is a bit different: it is a subclass of
 # Sprite. Rather than a plain class, like in the previous examples, this class
 # inherits from the Sprite class. The main additional function of a Sprite is
 # that it can be added and removed from groups. This is useful for handling
 # multiple objects of the same type, like projectiles.
-class Spaceship(pygame.sprite.Sprite):
+class Spaceship(pygame.sprite.Sprite): 
     """Class representing the spaceship."""
 
     def __init__(self, settings, position):
@@ -188,20 +191,34 @@ class Obstacle(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.original_image = pygame.image.load(assets/'asteroid1.png')
-        
+        self.x_vel = random.uniform(-1, 1) * Settings.obstacle_speed
+        self.y_vel = random.uniform(-1, 1)* Settings.obstacle_speed
         self.image = pygame.transform.scale(self.original_image, (100, 70))
         self.rect = self.image.get_rect()
-        self.rect.x = Settings.width - 50
-        self.rect.y = Settings.height - Settings.OBSTACLE_HEIGHT - 300
-        
+        self.rect.x = Settings.width - 50.5
+        self.rect.y = Settings.height - Settings.OBSTACLE_HEIGHT - 300.2
+        self.pos = Vector2(self.rect.x, self.rect.y)
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
 
     def update(self):
-        self.rect.x -= Settings.obstacle_speed
+        self.pos.x -= self.x_vel
+        self.pos.y -= self.y_vel
+        self.rect.x = self.pos.x
+        self.rect.y = self.pos.y
+        print(self.rect)
         # Remove the obstacle if it goes off screen
         if self.rect.right < 0:
-            self.kill()
+            self.pos.x =600
+            
+
+        if self.rect.left > 600:
+            self.pos.x =0
         
+        if self.rect.top < 0:
+            self.pos.y =600
+
+        if self.rect.bottom > 600:
+            self.pos.y =0
     def explode(self):
         """Replace the image with an explosition image."""
         
@@ -209,7 +226,8 @@ class Obstacle(pygame.sprite.Sprite):
         self.image = self.explosion
         self.image = pygame.transform.scale(self.image, (Settings.OBSTACLE_WIDTH, Settings.OBSTACLE_HEIGHT))
         self.rect = self.image.get_rect(center=self.rect.center)
-
+        self.x_vel = 0
+        self.y_vel = 0
 # def add_obstacle(obstacles_list):
 #     # random.random() returns a random float between 0 and 1, so a value
 #     # of 0.25 means that there is a 25% chance of adding an obstacle. Since
@@ -241,11 +259,11 @@ class Game:
         self.projectiles = pygame.sprite.Group()
         self.settings = settings
         self.screen = pygame.display.set_mode((self.settings.width, self.settings.height))
-        
-
+        self.last_obstacle_time = pygame.time.get_ticks()
+        self.obstacle_count = 0
         pygame.display.set_caption("Asteroids")
 
-        self.clock = pygame.time.Clock()
+        self.clock = pygame.time.Clock( )
         self.running = True
 
         self.all_sprites = pygame.sprite.Group()
@@ -270,9 +288,16 @@ class Game:
             collider = pygame.sprite.spritecollide(projectile, self.obstacles, dokill=False)
             if collider:
                 collider[0].explode()
+                Settings.obstacle_speed += 0.01
                 print("Great Shot!!!!")
+                #self.obstacles.remove(collider[0])
+                self.obstacle_count += 1
+
                 
     def update(self):
+        if pygame.time.get_ticks() - self.last_obstacle_time > 500:
+            self.last_obstacle_time = pygame.time.get_ticks()
+            self.add_obstacle()
 
         self.obstacles.update()
 
@@ -287,7 +312,11 @@ class Game:
         # The sprite group has a draw method that will draw all of the sprites in
         # the group.
         self.all_sprites.draw(self.screen)
+        score_text = Settings.font.render(f"Score: {self.obstacle_count}", True, Settings.white)
+        self.screen.blit(score_text, (210, 125))
         pygame.draw.rect(self.screen, Settings.green, (20, 20, 125, 20))
+        pygame.display.update()
+        
     
         pygame.display.flip()
 
@@ -305,7 +334,7 @@ class Game:
             self.update()
             self.draw()
             self.clock.tick(self.settings.fps)
-    def add_obstacle(self, obstacles):
+    def add_obstacle(self):
         # random.random() returns a random float between 0 and 1, so a value
         # of 0.25 means that there is a 25% chance of adding an obstacle. Since
         # add_obstacle() is called every 100ms, this means that on average, an
@@ -313,7 +342,7 @@ class Game:
         # The combination of the randomness and the time allows for random
         # obstacles, but not too close together. 
         
-        if random.random() < 1 :
+        if random.random() < 0.25 :
             obstacle = Obstacle()
             self.obstacles.add(obstacle)
             return 1
@@ -335,5 +364,5 @@ if __name__ == "__main__":
         )
 
     game.add(spaceship)
-    game.add_obstacle(game.obstacles)
+    game.add_obstacle()
     game.run()
