@@ -3,7 +3,7 @@ from pathlib import Path
 
 assets = Path(__file__).parent / "images"
 import pygame
-import math
+import math  
 from pygame.math import Vector2
 import random
 from pathlib import Path
@@ -19,14 +19,14 @@ class Settings:
     triangle_speed = 5
     projectile_speed = 5
     projectile_size = 11
-    shoot_delay = 250         # 250 milliseconds between shots, or 4 shots per second
+    shoot_delay = 250       # 250 milliseconds between shots, or 4 shots per second
     colors = {"white": (255, 255, 255), "black": (0, 0, 0), "red": (255, 0, 0)}
     OBSTACLE_HEIGHT = 20 
     OBSTACLE_WIDTH = 20
     green = (0,255,0)
     white = (255,255,255)
     obstacle_speed = 1
-    font = pygame.font.SysFont("Tahoma", 36)
+    font = pygame.font.SysFont("Tahoma", 26)
 # Notice that this Spaceship class is a bit different: it is a subclass of
 # Sprite. Rather than a plain class, like in the previous examples, this class
 # inherits from the Sprite class. The main additional function of a Sprite is
@@ -205,7 +205,7 @@ class Obstacle(pygame.sprite.Sprite):
         self.pos.y -= self.y_vel
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y
-        print(self.rect)
+        
         # Remove the obstacle if it goes off screen
         if self.rect.right < 0:
             self.pos.x =600
@@ -215,7 +215,7 @@ class Obstacle(pygame.sprite.Sprite):
             self.pos.x =0
         
         if self.rect.top < 0:
-            self.pos.y =600
+            self.pos.y =530
 
         if self.rect.bottom > 600:
             self.pos.y =0
@@ -262,7 +262,7 @@ class Game:
         self.last_obstacle_time = pygame.time.get_ticks()
         self.obstacle_count = 0
         pygame.display.set_caption("Asteroids")
-
+        self.energy = 125
         self.clock = pygame.time.Clock( )
         self.running = True
 
@@ -283,16 +283,32 @@ class Game:
         
         self.obstacles.update()
         #Check for collisions
+        
+        killer_asteroid = pygame.sprite.spritecollide(spaceship, self.obstacles, dokill=False)
+        if killer_asteroid:
+            killer_asteroid[0].explode()
+            self.energy -=25 
+            print("OOF")
+            self.obstacles.remove(killer_asteroid[0])
         for projectile in self.projectiles:
             
+                
             collider = pygame.sprite.spritecollide(projectile, self.obstacles, dokill=False)
             if collider:
                 collider[0].explode()
                 Settings.obstacle_speed += 0.01
                 print("Great Shot!!!!")
-                #self.obstacles.remove(collider[0])
+                self.obstacles.remove(collider[0])
                 self.obstacle_count += 1
+                projectile.kill()
+        self.update()
+                
+        # for obstacle in self.obstacles:
+        #     #print(obstacle)
+        #     self.obstacles.remove()
+            
 
+        pygame.display.flip()
                 
     def update(self):
         if pygame.time.get_ticks() - self.last_obstacle_time > 500:
@@ -313,8 +329,8 @@ class Game:
         # the group.
         self.all_sprites.draw(self.screen)
         score_text = Settings.font.render(f"Score: {self.obstacle_count}", True, Settings.white)
-        self.screen.blit(score_text, (210, 125))
-        pygame.draw.rect(self.screen, Settings.green, (20, 20, 125, 20))
+        self.screen.blit(score_text, (240, 10))
+        pygame.draw.rect(self.screen, Settings.green, (20, 20, self.energy, 20))
         pygame.display.update()
         
     
