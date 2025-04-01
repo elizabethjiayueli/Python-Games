@@ -19,7 +19,7 @@ class Settings:
     triangle_speed = 5
     projectile_speed = 5
     projectile_size = 11
-    shoot_delay = 250       # 250 milliseconds between shots, or 4 shots per second
+    shoot_delay = 2       # 250 milliseconds between shots, or 4 shots per second
     colors = {"white": (255, 255, 255), "black": (0, 0, 0), "red": (255, 0, 0)}
     OBSTACLE_HEIGHT = 20 
     OBSTACLE_WIDTH = 20
@@ -27,6 +27,7 @@ class Settings:
     white = (255,255,255)
     obstacle_speed = 1
     font = pygame.font.SysFont("Tahoma", 26)
+    high_score = 0
 # Notice that this Spaceship class is a bit different: it is a subclass of
 # Sprite. Rather than a plain class, like in the previous examples, this class
 # inherits from the Sprite class. The main additional function of a Sprite is
@@ -252,13 +253,14 @@ class AlienSpaceship(Spaceship):
 class Game:
     """Class to manage the game loop and objects."""
 
-    def __init__(self, settings):
+    def __init__(self, settings, screen):
         pygame.init()
         pygame.key.set_repeat(1250, 1250)
+        self.screen=screen
         self.obstacles = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
         self.settings = settings
-        self.screen = pygame.display.set_mode((self.settings.width, self.settings.height))
+        
         self.last_obstacle_time = pygame.time.get_ticks()
         self.obstacle_count = 0
         pygame.display.set_caption("Asteroids")
@@ -267,7 +269,12 @@ class Game:
         self.running = True
 
         self.all_sprites = pygame.sprite.Group()
+        self.spaceship = AlienSpaceship(
+        settings, position=(settings.width//2 , settings.height// 2)
+            )
 
+        self.add(self.spaceship)
+        self.add_obstacle()
     def add(self, sprite):
         """Adds a sprite to the game. Really important! This group is used to
         update and draw all of the sprites."""
@@ -284,9 +291,10 @@ class Game:
         self.obstacles.update()
         #Check for collisions
         
-        killer_asteroid = pygame.sprite.spritecollide(spaceship, self.obstacles, dokill=False)
+        killer_asteroid = pygame.sprite.spritecollide(self.spaceship, self.obstacles, dokill=False)
         if killer_asteroid:
             killer_asteroid[0].explode()
+            #CHANGE AFTER
             self.energy -=25 
             print("OOF")
             self.obstacles.remove(killer_asteroid[0])
@@ -301,6 +309,8 @@ class Game:
                 self.obstacles.remove(collider[0])
                 self.obstacle_count += 1
                 projectile.kill()
+                
+
         self.update()
                 
         # for obstacle in self.obstacles:
@@ -314,7 +324,7 @@ class Game:
         if pygame.time.get_ticks() - self.last_obstacle_time > 500:
             self.last_obstacle_time = pygame.time.get_ticks()
             self.add_obstacle()
-
+            
         self.obstacles.update()
 
         # We only need to call the update method of the group, and it will call
@@ -338,18 +348,46 @@ class Game:
 
     def run(self):
         """Main Loop for the game."""
-        settings = Settings()
-
-        game = Game(settings)
-        spaceship = AlienSpaceship(
-        settings, position=(settings.width//2 , settings.height// 2)
-        )
         
         while self.running:
             self.handle_events()
             self.update()
             self.draw()
             self.clock.tick(self.settings.fps)
+            if self.energy <= 0:
+                self.running = False
+        while not pygame.key.get_pressed()[pygame.K_RETURN]:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+
+            run = pygame.key.get_pressed()
+            end_text = Settings.font.render("Press Enter to Start Over", True, (255, 0, 0))
+            self.screen.blit(end_text, (150, 175))
+
+            if self.obstacle_count > Settings.high_score:
+                Settings.high_score = self.obstacle_count
+            
+            
+            obstacle_text = Settings.font.render(f"High score: {Settings.high_score}", True, (0, 255, 255))
+            self.screen.blit(obstacle_text, (210, 100))
+            
+            pygame.display.update()
+        # if pygame.key.get_pressed()[pygame.K_RETURN]:
+        #     self.running = True
+        #     settings = Settings()
+
+        game = Game(settings, screen)
+        self.spaceship = AlienSpaceship(
+        settings, position=(settings.width//2 , settings.height// 2)
+            )
+
+        game.add(self.spaceship)
+        game.add_obstacle()
+        game.run()
+
+        
     def add_obstacle(self):
         # random.random() returns a random float between 0 and 1, so a value
         # of 0.25 means that there is a 25% chance of adding an obstacle. Since
@@ -369,16 +407,12 @@ class Game:
 
 
 if __name__ == "__main__":
-
-    
-    
+    pygame.init() 
     settings = Settings()
-
-    game = Game(settings)
-    spaceship = AlienSpaceship(
-    settings, position=(settings.width//2 , settings.height// 2)
-        )
-
-    game.add(spaceship)
-    game.add_obstacle()
+    
+    
+    
+    screen = pygame.display.set_mode((settings.width, settings.height))
+    game = Game(settings, screen)
+    
     game.run()

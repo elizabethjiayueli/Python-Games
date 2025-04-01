@@ -29,8 +29,8 @@ def make_tiled_bg(screen, bg_file):
     background_width = bg_tile.get_width()
 
     # Make an image the is the same size as the screen
-    image = pygame.Surface((screen.get_width(), screen.get_height()))
-
+    original_image = pygame.Surface((screen.get_width(), screen.get_height()))
+    image = pygame.Surface.fill(original_image, (0,0,255))
     # Tile the background image in the x-direction
     for x in range(0, screen.get_width(), background_width):
         image.blit(bg_tile, (x, 0))
