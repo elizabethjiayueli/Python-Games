@@ -29,11 +29,24 @@ def make_tiled_bg(screen, bg_file):
     background_width = bg_tile.get_width()
 
     # Make an image the is the same size as the screen
-    original_image = pygame.Surface((screen.get_width(), screen.get_height()))
-    image = pygame.Surface.fill(original_image, (0,0,255))
+    image = pygame.Surface((screen.get_width(), screen.get_height()))
+    # image = pygame.Surface.fill(original_image, (0,0,255))
     # Tile the background image in the x-direction
-    for x in range(0, screen.get_width(), background_width):
-        image.blit(bg_tile, (x, 0))
+    
+    red = pygame.draw.rect(image, (237,33,0), (0,0, 100, 600))
+    orange = pygame.draw.rect(image, (255, 139, 0), (100,0, 100, 600))
+    yellow = pygame.draw.rect(image, (255,239,0), (200,0, 100, 600))
+    green = pygame.draw.rect(image, (11,218,81), (300,0, 100, 600))
+    blue = pygame.draw.rect(image, (0,127,255), (400,0, 100, 600))
+    purple = pygame.draw.rect(image, (148,0,211), (500,0, 100, 600))
+    # colors = [red, orange, yellow, green, blue, purple]
+    # counter = 0
+    # for x in range(0, screen.get_width(), background_width):
+    #     image.blit(red, (2*x, 0))
+    #     image.blit(orange, (2*x, 0))
+        # counter +=1
+        # if counter == 5:
+        #     break
         
     return image
 

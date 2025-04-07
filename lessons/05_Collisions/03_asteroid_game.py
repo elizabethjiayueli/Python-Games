@@ -19,7 +19,7 @@ class Settings:
     triangle_speed = 5
     projectile_speed = 5
     projectile_size = 11
-    shoot_delay = 2       # 250 milliseconds between shots, or 4 shots per second
+    shoot_delay = 100   # 250 milliseconds between shots, or 4 shots per second
     colors = {"white": (255, 255, 255), "black": (0, 0, 0), "red": (255, 0, 0)}
     OBSTACLE_HEIGHT = 20 
     OBSTACLE_WIDTH = 20
@@ -28,6 +28,9 @@ class Settings:
     obstacle_speed = 1
     font = pygame.font.SysFont("Tahoma", 26)
     high_score = 0
+    DIFFICULTY = input("What diff1culty? easy, medium, or hard?")
+    
+
 # Notice that this Spaceship class is a bit different: it is a subclass of
 # Sprite. Rather than a plain class, like in the previous examples, this class
 # inherits from the Sprite class. The main additional function of a Sprite is
@@ -295,8 +298,14 @@ class Game:
         if killer_asteroid:
             killer_asteroid[0].explode()
             #CHANGE AFTER
-            self.energy -=25 
-            print("OOF")
+            if Settings.DIFFICULTY == "easy":
+                self.energy -=10 
+                
+            elif Settings.DIFFICULTY == "medium":
+                self.energy -=15
+            elif Settings.DIFFICULTY == "hard":
+                self.energy -=21
+            print("HIT")
             self.obstacles.remove(killer_asteroid[0])
         for projectile in self.projectiles:
             
