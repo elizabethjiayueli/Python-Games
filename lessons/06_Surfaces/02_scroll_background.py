@@ -16,10 +16,10 @@ pygame.init()
 
 class Settings:
     """A class to store all settings for the game."""
-    SCREEN_WIDTH = 800
+    SCREEN_WIDTH = 600
     SCREEN_HEIGHT = 600
     BACKGROUND_SCROLL_SPEED = 2
-    FPS = 30
+    FPS = 50
 
 # Initialize screen
 screen = pygame.display.set_mode((Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT))
@@ -36,13 +36,26 @@ class Background(pygame.sprite.Sprite):
         
         # Load the background image and scale it to the screen size. Note the convert() call. 
         # This converts the form of the image to be more efficient. 
-        orig_image= pygame.image.load(d/'images/background_scroll.png').convert()
-        orig_image = pygame.transform.scale(orig_image, (Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT))
+        
+        stripes = pygame.Surface((300, screen.get_height()))
+        #image = pygame.Surface.fill(original_image, (0,0,255))
+        # Tile the background image in the x-direction
+        
+        red = pygame.draw.rect(stripes, (237,33,0), (0,0, 50, 600))
+        orange = pygame.draw.rect(stripes, (255, 139, 0), (50,0, 50, 600))
+        yellow = pygame.draw.rect(stripes, (255,239,0), (100,0, 50, 600))
+        green = pygame.draw.rect(stripes, (11,218,81), (150,0, 50, 600))
+        blue = pygame.draw.rect(stripes, (0,127,255), (200,0, 50, 600))
+        purple = pygame.draw.rect(stripes, (148,0,211), (250,0, 50, 600))
+        
         
         # Then, copy it into the self.image surface twice
-        self.image.blit(orig_image, (0, 0))
-        self.image.blit(orig_image, (Settings.SCREEN_WIDTH, 0))
-        
+        n = 0
+        for x in range(0, self.image.get_width(), stripes.get_width()):
+            self.image.blit(stripes, (x, 0))
+            n +=1
+            print(n)
+            
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = 0
@@ -54,6 +67,8 @@ class Background(pygame.sprite.Sprite):
         
         if self.rect.right <= Settings.SCREEN_WIDTH:
             self.rect.x = 0
+        # elif self.rect.left <= Settings.SCREEN_WIDTH:
+        #     self.rect.x = Settings.SCREEN_WIDTH
 
 
 
