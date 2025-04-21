@@ -11,6 +11,7 @@ class Settings:
     SCREEN_HEIGHT = 600
     PLAYER_SIZE = 20
     LINE_COLOR = (0, 255, 0)
+    PLAYER_COLOR = (0, 255, 0)
     
     BACKGROUND_COLOR = (255, 255, 255)
     TEXT_COLOR = (0, 0, 0)
@@ -20,6 +21,7 @@ class Settings:
     INITIAL_LENGTH = 100
     FONT_SIZE = 24
 screen = pygame.display.set_mode((Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT))
+clock = pygame.time.Clock()
 def scale_sprites(sprites, scale):
     """Scale a list of sprites by a given factor.
 
@@ -32,47 +34,55 @@ def scale_sprites(sprites, scale):
     """
     return [pygame.transform.scale(sprite, (sprite.get_width() * scale, sprite.get_height() * scale)) for sprite in sprites]
 class Player:
-    def __init__(self, x, y):
+    def __init__(self, rect, frog_sprites):
         """Initializes the Player with a position and direction vector.
 
         Args:
             x (int): The initial x-coordinate of the player.
             y (int): The initial y-coordinate of the player.
         """
-        self.position = pygame.math.Vector2(x, y)
+        self.frog_sprites = frog_sprites
+        self.rect = rect
+        self.position = pygame.math.Vector2(rect.center)  
         self.direction_vector = pygame.math.Vector2(Settings.INITIAL_LENGTH, 0)  # Initial direction vector
+        self.N = 0
+        self.step = 0
+        self.init_position, self.final_position = 0,0
 
-    def draw(self, show_line=True):
+
+    def draw(self, frog_index, show_line=True):
         """Draws the player and the direction vector on the screen."""
-        pygame.draw.rect(screen, Settings.PLAYER_COLOR, (self.position.x - Settings.PLAYER_SIZE // 2, self.position.y - Settings.PLAYER_SIZE // 2, Settings.PLAYER_SIZE, Settings.PLAYER_SIZE))
-        
+        x, y = self.rect.center
+        #pygame.draw.rect(screen, Settings.PLAYER_COLOR, (self.position.x - Settings.PLAYER_SIZE // 2, self.position.y - Settings.PLAYER_SIZE // 2, Settings.PLAYER_SIZE, Settings.PLAYER_SIZE))
+        self.image = pygame.transform.rotate(self.frog_sprites[frog_index], 270-self.direction_vector.as_polar()[1])
+        width, height = self.image.get_size()
+        x -= width//2
+        y -= height//2
         # The end position of the direction vector is the player's position plus the direction vector
-        end_position = self.position + self.direction_vector
+        end_position = self.rect.center + self.direction_vector
+        
+        if self.N > 0:
+            self.rect.center += self.step
+            self.N -= 1
         
         if show_line:
-            pygame.draw.line(screen, Settings.LINE_COLOR, self.position, end_position, 2)
-
+            pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, end_position, 2)
+        screen.blit(self.image, (x, y))
     def move(self):
         """Moves the player in the direction of the current angle."""
         
+    
+        self.init_position = self.rect.center # Save the initial position for the animation
         
-        init_position = self.position # Save the initial position for the animation
-        
-        # Calculate the final position after moving. Its just addition!
-        final_position = self.position + self.direction_vector
+        # Calculate the final position after moving. It's just addition!
+        self.final_position = self.rect.center + self.direction_vector
         
         # The rest is just for animation
         length = self.direction_vector.length()
-        N = int(length // 3)
-        step = (final_position - self.position) / N
+        self.N = int(length // 3)
+        self.step = (self.final_position - self.rect.center) / self.N
        
-        for i in range(N):
-            self.position += step
-            screen.fill(Settings.BACKGROUND_COLOR)
-            self.draw(show_line=False)
-            pygame.draw.line(screen, Settings.LINE_COLOR, init_position, final_position, 2)
-            pygame.display.flip()
-            clock.tick(Settings.FPS)
+        
 def main():
     # Initialize Pygame
     pygame.init()
@@ -105,7 +115,7 @@ def main():
     running = True
     
     sprite_rect = frog_sprites[0].get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
-    player = frog_sprites[0].get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+    player = Player(frog_sprites[0].get_rect(center=(screen.get_width() // 2, screen.get_height() // 2)), frog_sprites)
     pygame.math.Vector2(1, 0)
     def draw_alligator(alligator, index):
         """Creates a composed image of the alligator sprites.
@@ -144,23 +154,36 @@ def main():
         if key_limit%3 == 0: # Limit frequency of key presses so the user can set exact angles
             if keys[pygame.K_RIGHT]:
                 player.direction_vector = player.direction_vector.rotate(-Settings.ANGLE_CHANGE)
+                
             elif keys[pygame.K_LEFT]: 
                 player.direction_vector = player.direction_vector.rotate(Settings.ANGLE_CHANGE)
-                
+               
         if keys[pygame.K_UP]:
             player.direction_vector.scale_to_length(player.direction_vector.length() + Settings.LENGTH_CHANGE)
         elif keys[pygame.K_DOWN]:
-            player.direction_vector.scale_to_length(player.direction_vector.length() - Settings.LENGTH_CHANGE)
+            if player.direction_vector.length() > Settings.LENGTH_CHANGE:
+                player.direction_vector.scale_to_length(player.direction_vector.length() - Settings.LENGTH_CHANGE)
+            
         elif keys[pygame.K_SPACE]:
+            player.move()
+        elif keys[pygame.K_w]:
             player.center += pygame.Vector2(0, -1)
+        elif keys[pygame.K_s]:
+            player.center += pygame.Vector2(0, 1)
+        elif keys[pygame.K_a]:
+            player.center += pygame.Vector2(-1, 0)
+        elif keys[pygame.K_d]:
+            player.center += pygame.Vector2(1, 0)
         if frame_count % frames_per_image == 0: 
             frog_index = (frog_index + 1) % len(frog_sprites)
             allig_index = (allig_index + 1) % len(allig_sprites)
+    
         
         # Get the current sprite and display it in the middle of the screen
         
         
-        screen.blit(frog_sprites[frog_index], player)
+        
+        player.draw(frog_index)
 
         composed_alligator = draw_alligator(allig_sprites, allig_index)
         screen.blit(composed_alligator,  sprite_rect.move(0, 100))
