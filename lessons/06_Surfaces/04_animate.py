@@ -10,16 +10,17 @@ class Settings:
     SCREEN_WIDTH = 800
     SCREEN_HEIGHT = 600
     PLAYER_SIZE = 20
-    LINE_COLOR = (0, 255, 0)
+    LINE_COLOR = (255,192,203)
     PLAYER_COLOR = (0, 255, 0)
     
-    BACKGROUND_COLOR = (255, 255, 255)
+    BACKGROUND_COLOR = (0,127,255)
     TEXT_COLOR = (0, 0, 0)
     FPS = 30
     ANGLE_CHANGE = 3
     LENGTH_CHANGE = 5
     INITIAL_LENGTH = 100
     FONT_SIZE = 24
+    CROC_SPEED = 1
 screen = pygame.display.set_mode((Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 def scale_sprites(sprites, scale):
@@ -34,6 +35,7 @@ def scale_sprites(sprites, scale):
     """
     return [pygame.transform.scale(sprite, (sprite.get_width() * scale, sprite.get_height() * scale)) for sprite in sprites]
 class Player:
+
     def __init__(self, rect, frog_sprites):
         """Initializes the Player with a position and direction vector.
 
@@ -81,15 +83,46 @@ class Player:
         length = self.direction_vector.length()
         self.N = int(length // 3)
         self.step = (self.final_position - self.rect.center) / self.N
-       
+        for i in range(self.N):
+            self.position += self.step
+            
+            screen.fill(Settings.BACKGROUND_COLOR)
+            pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, self.final_position, 2)
+            self.draw(show_line=False, frog_index= False)
+            
+            
+            pygame.display.flip()
+            clock.tick(Settings.FPS)
+
+class Croc:
+    def __init__(self, player):
+        self.movement_speed = Settings.CROC_SPEED
+        self.player = player
+    def chase(self):
+        self.init_position = self.position
         
+        self.final_position = self.player.position
+        
+        # The rest is just for animation
+        length = self.direction_vector.length()
+        self.N = int(length // 5)
+        self.step = (self.final_position - self.rect.center) / self.N
+        for i in range(self.N):
+            self.position += self.step
+            screen.fill(Settings.BACKGROUND_COLOR)
+            
+            
+            
+            pygame.display.flip()
+            clock.tick(Settings.FPS)
+    
 def main():
     # Initialize Pygame
     pygame.init()
 
     # Set up the display
     screen = pygame.display.set_mode((640, 480))
-    pygame.display.set_caption("Sprite Animation Test")
+    pygame.display.set_caption("Survival Game")
 
     # Load the sprite sheet
     filename = images / 'spritesheet.png'  # Replace with your actual file path
@@ -116,6 +149,7 @@ def main():
     
     sprite_rect = frog_sprites[0].get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
     player = Player(frog_sprites[0].get_rect(center=(screen.get_width() // 2, screen.get_height() // 2)), frog_sprites)
+    croc = Croc(player)
     pygame.math.Vector2(1, 0)
     def draw_alligator(alligator, index):
         """Creates a composed image of the alligator sprites.
@@ -154,7 +188,6 @@ def main():
         if key_limit%3 == 0: # Limit frequency of key presses so the user can set exact angles
             if keys[pygame.K_RIGHT]:
                 player.direction_vector = player.direction_vector.rotate(-Settings.ANGLE_CHANGE)
-                
             elif keys[pygame.K_LEFT]: 
                 player.direction_vector = player.direction_vector.rotate(Settings.ANGLE_CHANGE)
                
@@ -164,7 +197,7 @@ def main():
             if player.direction_vector.length() > Settings.LENGTH_CHANGE:
                 player.direction_vector.scale_to_length(player.direction_vector.length() - Settings.LENGTH_CHANGE)
             
-        elif keys[pygame.K_SPACE]:
+        elif keys[pygame.K_SPACE] and key_limit%3 == 0:
             player.move()
         elif keys[pygame.K_w]:
             player.center += pygame.Vector2(0, -1)
@@ -190,7 +223,12 @@ def main():
 
         screen.blit(log,  sprite_rect.move(0, -100))
 
-
+        # collider = pygame.sprite.spritecollide(player, composed_alligator, dokill=True)
+        # if collider:
+        #     print("Great Shot!!!!")
+        #     composed_alligator.remove(collider[0])
+            
+        #    player.kill()
         # Update the display
         pygame.display.flip()
 
