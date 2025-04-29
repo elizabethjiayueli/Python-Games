@@ -65,15 +65,27 @@ class Player:
         
         if self.N > 0:
             self.rect.center += self.step
+            pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, self.final_position, 2)
+            
+            
             self.N -= 1
         
-        if show_line:
+
+        elif show_line:
             pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, end_position, 2)
         screen.blit(self.image, (x, y))
     def move(self):
         """Moves the player in the direction of the current angle."""
-        
-    
+        # while self.N >= 0:
+        #     self.position += self.step
+        #     screen.fill(Settings.BACKGROUND_COLOR)
+        #     pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, self.final_position, 2)
+        #     self.draw(show_line=False, frog_index= False)
+        #     pygame.display.flip()
+        #     clock.tick(Settings.FPS)
+        #     self.N -=1/6
+        if self.N>0:
+            return
         self.init_position = self.rect.center # Save the initial position for the animation
         
         # Calculate the final position after moving. It's just addition!
@@ -83,39 +95,48 @@ class Player:
         length = self.direction_vector.length()
         self.N = int(length // 3)
         self.step = (self.final_position - self.rect.center) / self.N
-        for i in range(self.N):
-            self.position += self.step
-            
-            screen.fill(Settings.BACKGROUND_COLOR)
-            pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, self.final_position, 2)
-            self.draw(show_line=False, frog_index= False)
-            
-            
-            pygame.display.flip()
-            clock.tick(Settings.FPS)
-
-class Croc:
-    def __init__(self, player):
-        self.movement_speed = Settings.CROC_SPEED
+        
+class Alligator:
+    def __init__(self, rect, player):
         self.player = player
+        self.rect = rect
+        self.movement_speed = Settings.CROC_SPEED
+        self.position = pygame.math.Vector2(self.rect.center) 
     def chase(self):
-        self.init_position = self.position
+        # self.init_position = self.position
         
-        self.final_position = self.player.position
+        # self.final_position = self.player.position
+        # if self.N>0:
+        #     return
         
+        self.prey = pygame.math.Vector2(self.player.rect.center)
         # The rest is just for animation
-        length = self.direction_vector.length()
-        self.N = int(length // 5)
-        self.step = (self.final_position - self.rect.center) / self.N
-        for i in range(self.N):
-            self.position += self.step
-            screen.fill(Settings.BACKGROUND_COLOR)
-            
-            
-            
-            pygame.display.flip()
-            clock.tick(Settings.FPS)
-    
+        self.length = self.prey - self.position
+        self.step = self.length // 300
+        self.position += self.step
+    def draw_alligator(self,alligator, index):
+        """Creates a composed image of the alligator sprites.
+
+        Args:
+            alligator (list): List of alligator sprites.
+            index (int): Index value to determine the right side sprite.
+
+        Returns:
+            pygame.Surface: Composed image of the alligator.
+        """
+        
+        index = index % (len(alligator)-2)
+        
+        pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, self.player.rect.center, 2)
+        width = alligator[0].get_width()
+        height = alligator[0].get_height()
+        composed_image = pygame.Surface((width * 3, height), pygame.SRCALPHA)
+
+        composed_image.blit(alligator[0], (0, 0))
+        composed_image.blit(alligator[1], (width, 0))
+        composed_image.blit(alligator[(index + 2) % len(alligator)], (width * 2, 0))
+
+        return composed_image
 def main():
     # Initialize Pygame
     pygame.init()
@@ -149,32 +170,12 @@ def main():
     
     sprite_rect = frog_sprites[0].get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
     player = Player(frog_sprites[0].get_rect(center=(screen.get_width() // 2, screen.get_height() // 2)), frog_sprites)
-    croc = Croc(player)
+    croc = Alligator(allig_sprites[0].get_rect(center=(screen.get_width() // 1.5, screen.get_height() // 1.5)), player)
     pygame.math.Vector2(1, 0)
-    def draw_alligator(alligator, index):
-        """Creates a composed image of the alligator sprites.
-
-        Args:
-            alligator (list): List of alligator sprites.
-            index (int): Index value to determine the right side sprite.
-
-        Returns:
-            pygame.Surface: Composed image of the alligator.
-        """
-        
-        index = index % (len(alligator)-2)
-        
-        width = alligator[0].get_width()
-        height = alligator[0].get_height()
-        composed_image = pygame.Surface((width * 3, height), pygame.SRCALPHA)
-
-        composed_image.blit(alligator[0], (0, 0))
-        composed_image.blit(alligator[1], (width, 0))
-        composed_image.blit(alligator[(index + 2) % len(alligator)], (width * 2, 0))
-
-        return composed_image
+    
     key_limit = 0
     while running:
+        Alligator.draw_alligator(croc, allig_sprites, allig_index)
         screen.fill((0,127,255))  # Clear screen with deep blue
 
         # Update animation every few frames
@@ -185,7 +186,7 @@ def main():
         
         keys = pygame.key.get_pressed()
         
-        if key_limit%3 == 0: # Limit frequency of key presses so the user can set exact angles
+        if key_limit%2 == 0: # Limit frequency of key presses so the user can set exact angles
             if keys[pygame.K_RIGHT]:
                 player.direction_vector = player.direction_vector.rotate(-Settings.ANGLE_CHANGE)
             elif keys[pygame.K_LEFT]: 
@@ -199,6 +200,7 @@ def main():
             
         elif keys[pygame.K_SPACE] and key_limit%3 == 0:
             player.move()
+            
         elif keys[pygame.K_w]:
             player.center += pygame.Vector2(0, -1)
         elif keys[pygame.K_s]:
@@ -218,8 +220,8 @@ def main():
         
         player.draw(frog_index)
 
-        composed_alligator = draw_alligator(allig_sprites, allig_index)
-        screen.blit(composed_alligator,  sprite_rect.move(0, 100))
+        composed_alligator = Alligator.draw_alligator(croc, allig_sprites, allig_index)
+        screen.blit(composed_alligator,  croc.position)
 
         screen.blit(log,  sprite_rect.move(0, -100))
 
@@ -230,13 +232,14 @@ def main():
             
         #    player.kill()
         # Update the display
+        croc.chase()
         pygame.display.flip()
 
         # Handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
+            
         # Cap the frame rate
         pygame.time.Clock().tick(60)
 
