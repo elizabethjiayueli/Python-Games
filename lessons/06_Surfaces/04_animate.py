@@ -2,6 +2,7 @@ import pygame
 from jtlgames.spritesheet import SpriteSheet
 from pathlib import Path
 import math
+import random
 
 images = Path(__file__).parent / 'images'
 
@@ -21,6 +22,8 @@ class Settings:
     INITIAL_LENGTH = 100
     FONT_SIZE = 24
     CROC_SPEED = 1
+    number = random.randint(0, 2)
+    death_messages = ["Game Over. You were tragically devoured by a crocodile.", "Uh Oh! The alligator has eaten you for dinner.", "The croc was so hungry he could've eaten a frog! Oh, wait, he already did."]
 screen = pygame.display.set_mode((Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 def scale_sprites(sprites, scale):
@@ -45,6 +48,8 @@ class Player:
         """
         self.frog_sprites = frog_sprites
         self.rect = rect
+        self.rect.height = rect.height/2
+        self.rect.width = rect.width/2
         self.position = pygame.math.Vector2(rect.center)  
         self.direction_vector = pygame.math.Vector2(Settings.INITIAL_LENGTH, 0)  # Initial direction vector
         self.N = 0
@@ -75,6 +80,7 @@ class Player:
             pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, end_position, 2)
         screen.blit(self.image, (x, y))
     def move(self):
+        
         """Moves the player in the direction of the current angle."""
         # while self.N >= 0:
         #     self.position += self.step
@@ -100,8 +106,11 @@ class Alligator:
     def __init__(self, rect, player):
         self.player = player
         self.rect = rect
+        self.rect.width = rect.width*3
+        self.rect.height = rect.height/3
         self.movement_speed = Settings.CROC_SPEED
         self.position = pygame.math.Vector2(self.rect.center) 
+        self.offset= pygame.math.Vector2(0, -self.rect.height)
     def chase(self):
         # self.init_position = self.position
         
@@ -111,9 +120,14 @@ class Alligator:
         
         self.prey = pygame.math.Vector2(self.player.rect.center)
         # The rest is just for animation
-        self.length = self.prey - self.position
-        self.step = self.length // 300
+        # if self.prey - self.position < (0,0):
+        #     self.length = -self.prey + self.position
+        # self.length = self.prey - self.position
+
+        self.length = self.prey - self.position + (3,1)
+        self.step = self.length / self.length.magnitude() / 2 
         self.position += self.step
+        self.rect.center = self.position
     def draw_alligator(self,alligator, index):
         """Creates a composed image of the alligator sprites.
 
@@ -127,7 +141,7 @@ class Alligator:
         
         index = index % (len(alligator)-2)
         
-        pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, self.player.rect.center, 2)
+        #pygame.draw.line(screen, (0,127,255), self.rect.center, self.player.rect.center, 2)
         width = alligator[0].get_width()
         height = alligator[0].get_height()
         composed_image = pygame.Surface((width * 3, height), pygame.SRCALPHA)
@@ -210,27 +224,31 @@ def main():
         elif keys[pygame.K_d]:
             player.center += pygame.Vector2(1, 0)
         if frame_count % frames_per_image == 0: 
-            frog_index = (frog_index + 1) % len(frog_sprites)
+            if player.N<=0:
+                frog_index = (frog_index + 1) % len(frog_sprites)
             allig_index = (allig_index + 1) % len(allig_sprites)
+        
     
         
         # Get the current sprite and display it in the middle of the screen
         
         
-        
+        #pygame.draw.rect(screen, Settings.LINE_COLOR, player.rect)
         player.draw(frog_index)
-
+        #pygame.draw.rect(screen, Settings.LINE_COLOR, croc.rect)
         composed_alligator = Alligator.draw_alligator(croc, allig_sprites, allig_index)
-        screen.blit(composed_alligator,  croc.position)
-
+        screen.blit(composed_alligator,  croc.rect.move(croc.offset))
+        
+        
         screen.blit(log,  sprite_rect.move(0, -100))
 
-        # collider = pygame.sprite.spritecollide(player, composed_alligator, dokill=True)
-        # if collider:
-        #     print("Great Shot!!!!")
-        #     composed_alligator.remove(collider[0])
+        collider = pygame.sprite.collide_rect(player, croc)
+        if collider:
             
-        #    player.kill()
+            print(Settings.death_messages[Settings.number])
+            
+            
+            running = False
         # Update the display
         croc.chase()
         pygame.display.flip()

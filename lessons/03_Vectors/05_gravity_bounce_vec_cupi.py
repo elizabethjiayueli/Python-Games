@@ -218,7 +218,7 @@ class Player:
     def update_v(self):
         """Update the player's velocity based on gravity and bounce on edges"""
         
-        self.vel += self.game.gravity  # Add gravity to the velocity
+        self.vel += pygame.math.Vector2(0, GameSettings.gravity)  # Add gravity to the velocity
 
         if self.at_bottom() and self.going_down():
             self.vel.y = 0
@@ -244,6 +244,20 @@ class Player:
         
         if self.at_bottom():
             self.pos.y = self.game.settings.height - self.height
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         if self.at_top():
             self.pos.y = 0
