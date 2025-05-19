@@ -3,8 +3,15 @@ from jtlgames.spritesheet import SpriteSheet
 from pathlib import Path
 import math
 import random
+import time
+import pygame
+ 
+from pygame.math import Vector2
 
-images = Path(__file__).parent / 'images'
+from pathlib import Path
+images_dir = Path(__file__).parent / "images" if (Path(__file__).parent / "images").exists() else Path(__file__).parent / "assets"
+pygame.init()
+images = Path(__file__).parent / 'images' 
 
 class Settings:
     """A class to store all settings for the game."""
@@ -22,10 +29,15 @@ class Settings:
     INITIAL_LENGTH = 100
     FONT_SIZE = 24
     CROC_SPEED = 1
-    number = random.randint(0, 2)
-    death_messages = ["Game Over. You were tragically devoured by a crocodile.", "Uh Oh! The alligator has eaten you for dinner.", "The croc was so hungry he could've eaten a frog! Oh, wait, he already did."]
+    score = 0 
+    
+    number = random.randint(0, 6)
+    white = (255, 255, 255)
+    font = pygame.font.SysFont("Tahoma", 26)
+    death_messages = ["Game Over. You were tragically devoured by a crocodile.", "Uh Oh! The alligator has eaten you for dinner.", "The croc was so hungry he could've eaten a frog! Oh, wait, he already did.", "Oh, I'll come back soon. I'll win next time!", "Chomp! The crocodile caught up... The frog's final hop came a little too late.", "You leapt with all your might, but the beast was faster. In a heartbeat, the jaws closed—and the swamp claimed you.", "Well... that escalated quickly. Note to self: taunting crocodiles is a terrible life choice."]
 screen = pygame.display.set_mode((Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT))
 clock = pygame.time.Clock()
+
 def scale_sprites(sprites, scale):
     """Scale a list of sprites by a given factor.
 
@@ -196,6 +208,7 @@ def main():
         frame_count += 1
         key_limit += 1
         
+
         
         
         keys = pygame.key.get_pressed()
@@ -216,13 +229,13 @@ def main():
             player.move()
             
         elif keys[pygame.K_w]:
-            player.center += pygame.Vector2(0, -1)
+            player.rect.center += pygame.Vector2(0, -1)
         elif keys[pygame.K_s]:
-            player.center += pygame.Vector2(0, 1)
+            player.rect.center += pygame.Vector2(0, 1)
         elif keys[pygame.K_a]:
-            player.center += pygame.Vector2(-1, 0)
+            player.rect.center += pygame.Vector2(-1, 0)
         elif keys[pygame.K_d]:
-            player.center += pygame.Vector2(1, 0)
+            player.rect.center += pygame.Vector2(1, 0)
         if frame_count % frames_per_image == 0: 
             if player.N<=0:
                 frog_index = (frog_index + 1) % len(frog_sprites)
@@ -239,14 +252,13 @@ def main():
         composed_alligator = Alligator.draw_alligator(croc, allig_sprites, allig_index)
         screen.blit(composed_alligator,  croc.rect.move(croc.offset))
         
-        
         screen.blit(log,  sprite_rect.move(0, -100))
 
         collider = pygame.sprite.collide_rect(player, croc)
         if collider:
             
             print(Settings.death_messages[Settings.number])
-            
+            #print("Score:", Settings.score)
             
             running = False
         # Update the display
@@ -257,7 +269,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            
+                
         # Cap the frame rate
         pygame.time.Clock().tick(60)
 

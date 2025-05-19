@@ -33,7 +33,7 @@ class GameSettings:
     player_width: int = 20
     player_height: int = 20
     player_x_vel= pygame.Vector2(10, 0)
-    player_jump_velocity= pygame.Vector2(5,0)
+    player_jump_velocity= pygame.Vector2(5,5)
     frame_rate: int = 30
     player_thrust: int = 5
 
@@ -150,6 +150,7 @@ class Player:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
             self.vel += self.thrust
+            lloonngg = pygame.transform.scale(frog_g, (frog_g.get_width(), frog_g.get_height() * 6))
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             
             #self.v_jump += settings.player_jump_velocity

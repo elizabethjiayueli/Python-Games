@@ -61,7 +61,7 @@ frog4x =  pygame.transform.scale_by(frog2x, 3)
 screen.blit(frog4x, grid[43])
 
 # Different scale in X and Y
-frog_w = pygame.transform.scale(frog_g, (frog_g.get_width() * 6, frog_g.get_height() * 2))
+frog_w = pygame.transform.scale(frog_g, (frog_g.get_width(), frog_g.get_height() * 6))
 screen.blit(frog_w, grid[45])
 
 # Rotations. Notice that the frog seems to be moving down, this is 
