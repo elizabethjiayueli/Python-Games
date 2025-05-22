@@ -12,6 +12,7 @@ assets = Path("/workspaces/Python-Games/lessons/05_Collisions/images")
 import pygame
 import random
 from pathlib import Path
+import time
 
 # Initialize Pygame 
 pygame.init()
@@ -61,6 +62,7 @@ class Obstacle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = Settings.WIDTH
         self.rect.y = Settings.HEIGHT - Settings.OBSTACLE_HEIGHT - 45
+        
 
         
         self.explosion = pygame.image.load(images_dir / "explosion1.gif")
@@ -90,13 +92,21 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.original_image, (Settings.width, Settings.height))
         self.rect = self.image.get_rect()
         self.rect.x = 50
-        self.rect.y = Settings.HEIGHT - Settings.PLAYER_SIZE - 7
+        self.rect.y = Settings.HEIGHT - Settings.PLAYER_SIZE -7
+        self.image_reg = pygame.transform.scale(self.original_image, (Settings.width, Settings.height))
+        self.rect_reg = self.image.get_rect()
+        self.image_squash = pygame.transform.scale(self.original_image, (Settings.width, Settings.height/2))
+        self.rect_squash = self.image_squash.get_rect()
         self.speed = Settings.player_speed
         self.y_vel = 0
         self.score = 0
+        self.frames = 0
+        self.is_squashing = False
+        self.original_height = Settings.height
+        self.squashed_height = Settings.height/2
     def update(self): 
-         
-
+        # self.frames += 1
+        print(self.frames)
         keys = pygame.key.get_pressed()  
         if self.rect.bottom == Settings.HEIGHT:
             if keys[pygame.K_SPACE] or keys[pygame.K_UP]:
@@ -110,10 +120,25 @@ class Player(pygame.sprite.Sprite):
         # Keep the player on screen
         if self.rect.top < 0:
             self.rect.top = 0
-        if self.rect.bottom >= Settings.HEIGHT-Settings.height:
-            pygame.transform.scale(screen, (Settings.width, Settings.height/2))
-            screen.blit(frog_w, grid[45])
+        if self.rect.bottom > Settings.HEIGHT:
+            #pass
             self.rect.bottom = Settings.HEIGHT
+        #.if self.rect.bottom >= Settings.HEIGHT and self.y_vel > 0:   
+        if self.rect.bottom >= Settings.HEIGHT and self.y_vel > 0 and self.is_squashing == False:
+            print("...")
+            self.is_squashing = True
+            self.image = self.image_squash
+            self.rect = self.rect_squash
+        if self.is_squashing == True:
+            self.frames += 1
+            Settings.height = self.squashed_height
+        if self.frames %30 == 0:
+            self.image = self.image_reg
+            self.is_squashing = False
+            self.frames = 0 
+            self.rect = self.rect_reg
+        # elif self.rect.    
+        #     #screen.blit(self.image, (self.rect.x, self.rect.y))
 
 # Create a player object
 player = Player()
@@ -171,6 +196,11 @@ def Game():
         if collider:
             collider[0].explode()
             game_over = True
+            #player.image = player.image2
+            #player.rect = player.rect2
+            #player.rect.x = player.rect.x2
+            #player.rect.y = player.rect.y2
+            player = Player()
        
         # Draw everything
         screen.fill(Settings.WHITE)
