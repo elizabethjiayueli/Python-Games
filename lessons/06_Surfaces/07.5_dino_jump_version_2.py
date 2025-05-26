@@ -5,6 +5,7 @@ Use the arrow keys to move the blue square up and down to avoid the Settings.
 obstacles. The game should end when the player collides with an obstacle ...
 but it does not. It's a work in progress, and you'll have to finish it. 
 
+## = MY COMMENTS
 """
 from pathlib import Path
 #assets = Path(__file__).parent / "images"
@@ -46,8 +47,8 @@ class Settings:
     #Gravity stuff
     
     gravity: int = 1
-    jump_y_velocity: int = 17
-    jump_x_velocity: int = 10
+    jump_y_velocity: int = 16
+    jump_x_velocity: int = 1
     player_x_velocity = 0
     player_y_velocity = 0
 screen = pygame.display.set_mode((Settings.WIDTH, Settings.HEIGHT))
@@ -93,20 +94,24 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 50
         self.rect.y = Settings.HEIGHT - Settings.PLAYER_SIZE -7
-        self.image_reg = pygame.transform.scale(self.original_image, (Settings.width, Settings.height))
-        self.rect_reg = self.image.get_rect()
-        self.image_squash = pygame.transform.scale(self.original_image, (Settings.width, Settings.height/2))
-        self.rect_squash = self.image_squash.get_rect()
+        
         self.speed = Settings.player_speed
         self.y_vel = 0
         self.score = 0
         self.frames = 0
+        ## Different images for squashing
+        self.image_reg = pygame.transform.scale(self.original_image, (Settings.width, Settings.height))
+        self.rect_reg = self.image.get_rect()
+        self.image_squash = pygame.transform.scale(self.original_image, (Settings.width, Settings.height/2))
+        self.rect_squash = self.image_squash.get_rect()
         self.is_squashing = False
         self.original_height = Settings.height
         self.squashed_height = Settings.height/2
     def update(self): 
         # self.frames += 1
+        ## Letting you know how many frames there are until 30
         print(self.frames)
+        ## Jumping detection
         keys = pygame.key.get_pressed()  
         if self.rect.bottom == Settings.HEIGHT:
             if keys[pygame.K_SPACE] or keys[pygame.K_UP]:
@@ -118,12 +123,21 @@ class Player(pygame.sprite.Sprite):
         self.rect.y += self.y_vel
         
         # Keep the player on screen
-        if self.rect.top < 0:
+        if self.rect.top < 0: 
             self.rect.top = 0
+        if self.rect.bottom <= Settings.HEIGHT:
+            self.image = self.image_reg
+            self.rect = self.rect_reg
+        if self.y_vel == 0:
+            self.image = self.image_reg
         if self.rect.bottom > Settings.HEIGHT:
-            #pass
+            #pass                   
             self.rect.bottom = Settings.HEIGHT
+            self.image = self.image_squash
+            self.rect = self.rect_squash
+        
         #.if self.rect.bottom >= Settings.HEIGHT and self.y_vel > 0:   
+        ## Sqaush timing
         if self.rect.bottom >= Settings.HEIGHT and self.y_vel > 0 and self.is_squashing == False:
             print("...")
             self.is_squashing = True
@@ -132,11 +146,11 @@ class Player(pygame.sprite.Sprite):
         if self.is_squashing == True:
             self.frames += 1
             Settings.height = self.squashed_height
-        if self.frames %30 == 0:
-            self.image = self.image_reg
-            self.is_squashing = False
-            self.frames = 0 
-            self.rect = self.rect_reg
+        # if self.frames %30 == 0:
+        #     self.image = self.image_reg
+        #     self.is_squashing = False
+        #     self.frames = 0 
+        #     self.rect = self.rect_reg
         # elif self.rect.    
         #     #screen.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -195,12 +209,13 @@ def Game():
         collider = pygame.sprite.spritecollide(player, obstacles, dokill=False)
         if collider:
             collider[0].explode()
+            player = Player()
             game_over = True
             #player.image = player.image2
             #player.rect = player.rect2
             #player.rect.x = player.rect.x2
             #player.rect.y = player.rect.y2
-            player = Player()
+            
        
         # Draw everything
         screen.fill(Settings.WHITE)
