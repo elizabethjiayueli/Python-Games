@@ -246,6 +246,7 @@ def Game():
             Settings.high_score = obstacle_count
         obstacle_text = Settings.font.render(f"High score: {Settings.high_score}", True, Settings.HEIGHT)
         screen.blit(obstacle_text, (210, 125))
+        player.image = player.image_reg
         pygame.display.update()
     
     Game()
