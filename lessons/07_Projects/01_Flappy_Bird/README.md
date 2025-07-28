@@ -47,7 +47,7 @@ to join the path with a string, so it is like writing `"assets" + "/" + "backgro
 Add the bird. Pressing the space bar should give the bird a small upward
 velocity, but gravity should be pulling the bird down.
 
-Try to animate the bird by swaping the image of the bird between two or three of
+Try to animate the bird by swapping the image of the bird between two or three of
 the bird images in the `images/` directory
 
 ### 2. Add collisions

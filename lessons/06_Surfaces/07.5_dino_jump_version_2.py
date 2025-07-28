@@ -85,7 +85,7 @@ class Obstacle(pygame.sprite.Sprite):
 
 # Define a player class
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self): 
         super().__init__()
         self.original_image = pygame.image.load(assets/'dino_0.png')
         
