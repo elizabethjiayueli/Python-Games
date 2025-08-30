@@ -119,7 +119,7 @@ class Game():
     
    
     def make_tiled_bg(screen, background):
-        # Scale background to match the screen height
+        "Scale background to match the screen height"
         
         bg_tile = pygame.image.load(background).convert()
         
@@ -143,8 +143,7 @@ font = pygame.font.SysFont(None, 40)
 text = Game.score
 game = Game()
 
-running = False
-run = True
+
 running = True
 while running:
     
@@ -172,7 +171,7 @@ while running:
     else: 
         game.player.update()
         game.pipes.update()
-        game.player.rect.draw()
+        #game.player.draw()
          
         
         # Collision detection
