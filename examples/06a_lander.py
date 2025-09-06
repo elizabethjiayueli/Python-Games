@@ -30,7 +30,7 @@ fuel_cell_width, fuel_cell_height = 30, 30
 fuel_cells = []
 
 landing_pad_width, landing_pad_height = 100, 20
-landing_pad_speed = 2
+landing_pad_speed = 1
 
 # Game statistics
 score = 0
@@ -81,7 +81,7 @@ while running:
             lander_speed_x = 0
 
         # Spawn fuel cells randomly
-        if random.randint(1, 100) == 1:
+        if random.randint(1, 50) == 1:
             fuel_cell = pygame.Rect(random.randint(0, width - fuel_cell_width), 0, fuel_cell_width, fuel_cell_height)
             fuel_cells.append(fuel_cell)
 
