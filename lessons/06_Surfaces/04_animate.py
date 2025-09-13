@@ -31,10 +31,10 @@ class Settings:
     CROC_SPEED = 1
     score = 0 
     
-    number = random.randint(0, 6)
+    number = random.randint(0, 0)
     white = (255, 255, 255)
     font = pygame.font.SysFont("Tahoma", 26)
-    death_messages = ["Game Over. You were tragically devoured by a crocodile.", "Uh Oh! The alligator has eaten you for dinner.", "The croc was so hungry he could've eaten a frog! Oh, wait, he already did.", "Oh, I'll come back soon. I'll win next time!", "Chomp! The crocodile caught up... The frog's final hop came a little too late.", "You leapt with all your might, but the beast was faster. In a heartbeat, the jaws closed—and the swamp claimed you.", "Well... that escalated quickly. Note to self: taunting crocodiles is a terrible life choice."]
+    death_messages = ["Game Over"]
 screen = pygame.display.set_mode((Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 

@@ -26,7 +26,7 @@ fuel = 100
 fuel_consumption = 0.2
 lander_speed_x = 0
 
-fuel_cell_width, fuel_cell_height = 30, 30
+fuel_cell_width, fuel_cell_height = 50, 50
 fuel_cells = []
 
 landing_pad_width, landing_pad_height = 100, 20

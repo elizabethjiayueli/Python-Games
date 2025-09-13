@@ -49,6 +49,8 @@ def in_or_out(db):
             pass
         elif continue_ == "no":
             break
+        else:
+            messagebox.showwarning("invalid response", "please try again")
 
 def room_func(rooms):
     room = simpledialog.askinteger("Which room would you like?", rooms)

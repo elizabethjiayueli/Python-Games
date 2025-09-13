@@ -47,7 +47,7 @@ class Flappy(pygame.sprite.Sprite):
 
         # Jumping
         keys = pygame.key.get_pressed()
-        
+        mouse = pygame.mouse.get_pressed()
         if (keys[pygame.K_SPACE] or keys[pygame.K_UP]) and self.pressed == False:
             self.y_vel = -Settings.flap_y_velocity
             self.pressed = True

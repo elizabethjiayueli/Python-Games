@@ -22,7 +22,6 @@ class Settings:
     pygame.display.set_caption('SPACE INVADERS')  
     FPS = 30
     red = (255, 8, 0)
-
     projectile_speed = 10
     shoot_delay = 250  # 250 milliseconds between shots, or 4 shots per second   
     width, height = 48, 56
@@ -51,6 +50,7 @@ class Player(pygame.sprite.Sprite):
         """Checks if the spaceship is ready to shoot again."""
         if pygame.time.get_ticks() - self.last_shot > self.shoot_delay:
             self.last_shot = pygame.time.get_ticks()
+        
             return True
         return False
             
@@ -77,7 +77,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= 5
         if keys[pygame.K_DOWN]:
             self.rect.y += 5
-        if keys[pygame.K_SPACE] and self.ready_to_shoot():
+        if keys[pygame.K_SPACE] and self.ready_to_shoot() and len(game.projectiles) < 3:
             self.fire_projectile()
         if self.rect.topleft[0] <= 0:
             self.rect.x = 0
@@ -92,11 +92,18 @@ class Player(pygame.sprite.Sprite):
             
             
 class Alien(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, position):
         super().__init__()
         self.original_image = pygame.image.load(assets/'alien.png')
-        self.image = pygame.transform.scale(self.original_image, (Settings.width, Settings.height))
-        self.rect = self.image.get_rect()
+        self.image = pygame.transform.scale(self.original_image, (Settings.width-20, Settings.height-25))
+        self.rect = self.image.get_rect(center = position)
+        self.velocity = pygame.Vector2(2, 0) 
+    def update(self):
+        
+        if self.rect.right <= self.rect.x -20 or self.rect.right >= self.rect.x + 20:
+            self.velocity = (-self.velocity[0], self.velocity[1])
+        self.rect.x += self.velocity[0]
+        super().update()
 class Bomb(pygame.sprite.Sprite):
     def __init__(self, position, velocity=Settings.projectile_speed/2):
         super().__init__()
@@ -170,6 +177,12 @@ class Game:
         self.enemies = pygame.sprite.Group()
         self.bombs = pygame.sprite.Group()
         
+        y = 10
+        for i in range(20):
+            if i % 8==0:
+                y += 40
+                i = 10
+            self.enemies.add(Alien(position=(i*30 , y)))
 
         #health
         self.health = 3
@@ -191,10 +204,17 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+
+
+            # colliders
             collider = pygame.sprite.spritecollide(self.player, self.bombs, False)
             if collider:
-                collider[0].explode()
+                self.bombs.remove(collider[0])
                 print("hit by bomb")
+                self.health_bars[len(self.health_bars) - 1]
+                if self.health <= 0:
+                    print("Game Over")
+                    self.running = False
         
 game = Game()
 
