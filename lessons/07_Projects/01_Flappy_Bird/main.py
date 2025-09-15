@@ -1,6 +1,9 @@
 import pygame
 import time
 import random
+from tkinter import messagebox, simpledialog,Tk
+window = Tk()
+window.withdraw()
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -11,7 +14,7 @@ class Settings:
     # Screen
     screen_width = 288
     screen_height = 500
-    pipe_width = 80
+    pipe_width = 80 
     pipe_height = 500
     position = (100, 100)   
     #pipe_speed = 
@@ -166,7 +169,8 @@ while running:
         else:
             countdown_seconds = int(time_left / 1000) + 1 
             text_to_display = str(countdown_seconds)
-            
+    
+
             
     else: 
         game.player.update()
@@ -178,13 +182,31 @@ while running:
         collider = pygame.sprite.spritecollide(game.player, game.obstacles, dokill=False)
         if collider:
             print("Your score was:", game.score)
-            running = False 
+            print("Game Over", f"Your score was: {game.score}. Press enter to restart. ")
+            
+            
+            game.score = 0
+            while not pygame.key.get_pressed()[pygame.K_RETURN]:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        quit()
+            
+            position = (100, 100)
+            game.player.rect.center = position 
+            game.obstacles.empty() 
+            game.pipes = Pipes()
+            game.obstacles.add(game.pipes.lower_pipe, game.pipes.upper_pipe)
+            
+            game_active = False
+            countdown_start_time = pygame.time.get_ticks()
 
-       
+
+    
 
     
     Settings.screen.blit(game.full_background, (0, 0))
-
+    
     if not game_active:
         countdown_text_surface = countdown_font.render(text_to_display, True, (255, 255, 255))
         text_rect = countdown_text_surface.get_rect(center=(Settings.screen_width / 2, Settings.screen_height / 2))
@@ -201,6 +223,7 @@ while running:
     
     clock.tick(Settings.FPS) 
 
+    
 pygame.quit()                
         
 

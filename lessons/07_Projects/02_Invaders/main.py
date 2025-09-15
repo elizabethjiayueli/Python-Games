@@ -99,11 +99,19 @@ class Alien(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = position)
         self.velocity = pygame.Vector2(2, 0) 
     def update(self):
-        
-        if self.rect.right <= self.rect.x -20 or self.rect.right >= self.rect.x + 20:
+        if self.rect.right <= 0 or self.rect.right >= Settings.screen_width:
             self.velocity = (-self.velocity[0], self.velocity[1])
         self.rect.x += self.velocity[0]
         super().update()
+
+class Aliens():
+    def __init__(self, aliens):
+        self.settings = Settings
+        self.game = game
+    def update(self):
+        for i in range(20):
+            self.game.aliens[i].velocity = -(self.game.aliens[i].velocity[0], self.game.aliens[i].velocity[1])
+
 class Bomb(pygame.sprite.Sprite):
     def __init__(self, position, velocity=Settings.projectile_speed/2):
         super().__init__()
@@ -179,10 +187,13 @@ class Game:
         
         y = 10
         for i in range(20):
+            x = i*30
             if i % 8==0:
-                y += 40
-                i = 10
-            self.enemies.add(Alien(position=(i*30 , y)))
+                y += 30
+                x = 0
+                
+            self.enemies.add(Alien(position=(x + 30,   y + 10))) 
+
 
         #health
         self.health = 3
@@ -215,7 +226,15 @@ class Game:
                 if self.health <= 0:
                     print("Game Over")
                     self.running = False
-        
+            hit = pygame.sprite.groupcollide(self.projectiles, self.enemies, True, True)
+            if hit:
+                print("enemy hit")
+                for enemy in hit.values():
+                    self.enemies.remove(enemy[0])
+            if len(self.enemies) == 0:
+                print("You Win!")
+                self.running = False
+         
 game = Game()
 
 running = False
@@ -229,6 +248,8 @@ while running:
     game.projectiles.draw(Settings.screen)
     game.enemies.update()
     game.enemies.draw(Settings.screen)
+    Aliens.update(Alien)
+
     add_obstacle(game.bombs)
     game.bombs.update()
     game.bombs.draw(Settings.screen)

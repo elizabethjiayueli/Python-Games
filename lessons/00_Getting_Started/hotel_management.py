@@ -17,7 +17,7 @@ def in_or_out(db):
     
     rooms = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
     while True:
-        print(db)
+        print(f"Available rooms: {db}")
         ask = simpledialog.askstring("HOTEL MANAGEMENT", "What is your name?")
         check = simpledialog.askstring("HOTEL MANAGEMENT", "Would you like to check in or check out?")
         if check == "check in" or check == "in":
@@ -44,14 +44,14 @@ def in_or_out(db):
         else:
             messagebox.showwarning("invalid response", "please try again")
         messagebox.showinfo("HOTEL MANAGEMENT", db)
-        continue_ = simpledialog.askstring("HOTEL MANAGEMENT", "Would you like to continue checking in?")
-        if continue_ == "yes":
+        continue_ = messagebox.askyesno("HOTEL MANAGEMENT", "Would you like to continue checking in?")
+        if continue_ == True:
             pass
-        elif continue_ == "no":
+        elif continue_ == False:
             break
         else:
             messagebox.showwarning("invalid response", "please try again")
-
+            continue_ = messagebox.askyesno("HOTEL MANAGEMENT", "Would you like to continue checking in?")
 def room_func(rooms):
     room = simpledialog.askinteger("Which room would you like?", rooms)
     if room in rooms:

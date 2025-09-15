@@ -26,7 +26,7 @@ fuel = 100
 fuel_consumption = 0.2
 lander_speed_x = 0
 
-fuel_cell_width, fuel_cell_height = 50, 50
+fuel_cell_width, fuel_cell_height = 30, 30
 fuel_cells = []
 
 landing_pad_width, landing_pad_height = 100, 20
@@ -76,8 +76,8 @@ while running:
         if lander.left < 0:
             lander.left = 0
             lander_speed_x = 0
-        elif lander.right > width:
-            lander.right = width
+        elif lander.right > width/2 + 200:
+            lander.right = width/2 + 200
             lander_speed_x = 0
 
         # Spawn fuel cells randomly

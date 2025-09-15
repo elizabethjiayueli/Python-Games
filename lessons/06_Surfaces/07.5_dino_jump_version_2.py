@@ -106,11 +106,23 @@ class Player(pygame.sprite.Sprite):
         self.rect_squash = self.image_squash.get_rect()
         self.is_squashing = False
         self.original_height = Settings.height
-        self.squashed_height = Settings.height/2
+        self.squashed_height = 56
     def update(self): 
         # self.frames += 1
         ## Letting you know how many frames there are until 30
+
+
+
+
+
         print(self.frames)
+
+
+
+
+
+
+
         ## Jumping detection
         keys = pygame.key.get_pressed()  
         if self.rect.bottom == Settings.HEIGHT:
