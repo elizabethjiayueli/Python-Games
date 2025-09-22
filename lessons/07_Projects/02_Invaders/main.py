@@ -57,7 +57,6 @@ class Player(pygame.sprite.Sprite):
 
     def fire_projectile(self):
         """Creates and fires a projectile."""
-        print("firing projectile")
         new_projectile = Projectile(
             position=self.rect.midtop,
             velocity=self.settings.projectile_speed,
@@ -109,8 +108,10 @@ class Aliens():
         self.settings = Settings
         self.game = game
     def update(self):
-        for i in range(20):
-            self.game.aliens[i].velocity = -(self.game.aliens[i].velocity[0], self.game.aliens[i].velocity[1])
+        enemy_list = game.enemies.sprites()
+        self.enemy_number = len(enemy_list)
+        for i in range(self.enemy_number):
+            enemy_list[i].velocity = ( -enemy_list[i].velocity[0], 0)
 
 class Bomb(pygame.sprite.Sprite):
     def __init__(self, position, velocity=Settings.projectile_speed/2):
@@ -148,11 +149,15 @@ def add_obstacle(obstacles):
     # obstacles, but not too close together. 
     key = pygame.key.get_pressed()
     if key[pygame.K_b]:
-        bomb = Bomb(
-            position=(100, 100)
-        )
-        print("bomb released")
-        game.bombs.add(bomb)
+        
+        if game.bomb_num <=1:
+            bomb = Bomb(
+                position=(100, 100)
+            )
+            print("bomb released")
+            game.bombs.add(bomb)
+        else:
+            pass
         return 1
     return 0
 
@@ -172,7 +177,6 @@ class Projectile(pygame.sprite.Sprite):
         self.rect.center += self.velocity
         if self.rect.center[1] <= 0 or self.rect.y >= Settings.screen_height:
             self.kill()
-            print("projectile killed")
         
         super().update()
     
@@ -184,14 +188,15 @@ class Game:
         self.projectiles = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bombs = pygame.sprite.Group()
+        self.bomb_num = len(self.bombs)
         
         y = 10
-        for i in range(20):
-            x = i*30
+        for i in range(24):
+            
             if i % 8==0:
                 y += 30
                 x = 0
-                
+            x = (i % 8) * 30    
             self.enemies.add(Alien(position=(x + 30,   y + 10))) 
 
 
@@ -221,8 +226,9 @@ class Game:
             collider = pygame.sprite.spritecollide(self.player, self.bombs, False)
             if collider:
                 self.bombs.remove(collider[0])
-                print("hit by bomb")
-                self.health_bars[len(self.health_bars) - 1]
+                self.health-=1
+                # self.health_bars[self.health_bars[collider[0]] - 1].fill((0,0,0))
+                self.health -= 1
                 if self.health <= 0:
                     print("Game Over")
                     self.running = False
@@ -248,16 +254,24 @@ while running:
     game.projectiles.draw(Settings.screen)
     game.enemies.update()
     game.enemies.draw(Settings.screen)
-    Aliens.update(Alien)
+    Aliens.update(game.enemies)
 
     add_obstacle(game.bombs)
     game.bombs.update()
     game.bombs.draw(Settings.screen)
     game.handle_events()
-    health_1 = pygame.draw.circle(Settings.screen, Settings.red, (129, 410), 5)
-    health_2 = pygame.draw.circle(Settings.screen, Settings.red, (144, 410), 5)
-    health_3 = pygame.draw.circle(Settings.screen, Settings.red, (159, 410), 5)
-    game.health_bars = [health_1, health_2, health_3]
+    
+    
+    if game.health > 0:
+        health_1 = pygame.draw.circle(Settings.screen, Settings.red, (129, 410), 5)
+    if game.health > 1:
+        health_2 = pygame.draw.circle(Settings.screen, Settings.red, (144, 410), 5)
+    if game.health > 2:
+        health_3 = pygame.draw.circle(Settings.screen, Settings.red, (159, 410), 5)
+    # health_1 = pygame.draw.circle(Settings.screen, Settings.red, (129, 410), 5)
+    # health_2 = pygame.draw.circle(Settings.screen, Settings.red, (144, 410), 5)
+    # health_3 = pygame.draw.circle(Settings.screen, Settings.red, (159, 410), 5)
+    # game.health_bars = [health_1, health_2, health_3]
     pygame.display.flip()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

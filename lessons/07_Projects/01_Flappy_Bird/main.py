@@ -104,7 +104,7 @@ class Pipes():
             self.upper_pipe.rect.y = self.lower_pipe.rect.y - self.gap - self.upper_pipe.rect.height # Reset y using .y and .height
             Game.score += 1
             
-            print(Game.score)
+            
         
 class Game():
     
@@ -181,11 +181,11 @@ while running:
         # Collision detection
         collider = pygame.sprite.spritecollide(game.player, game.obstacles, dokill=False)
         if collider:
-            print("Your score was:", game.score)
-            print("Game Over", f"Your score was: {game.score}. Press enter to restart. ")
+            
+            print("Game Over.", f"Your score was: {Game.score}. Press enter to restart. ")
             
             
-            game.score = 0
+            game.score = Game.score
             while not pygame.key.get_pressed()[pygame.K_RETURN]:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:

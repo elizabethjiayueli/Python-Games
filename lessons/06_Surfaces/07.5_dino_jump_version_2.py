@@ -34,7 +34,7 @@ class Settings:
 
     # Player attributes
     PLAYER_SIZE = 25
-    high_score = 0
+    high_score = -101
     player_speed = 5
 
     # Obstacle attributes
@@ -109,19 +109,6 @@ class Player(pygame.sprite.Sprite):
         self.squashed_height = 56
     def update(self): 
         # self.frames += 1
-        ## Letting you know how many frames there are until 30
-
-
-
-
-
-        print(self.frames)
-
-
-
-
-
-
 
         ## Jumping detection
         keys = pygame.key.get_pressed()  
@@ -157,6 +144,7 @@ class Player(pygame.sprite.Sprite):
             self.rect = self.rect_squash
         if self.is_squashing == True:
             self.frames += 1
+            self.score = self.frames//5
             Settings.height = self.squashed_height
         # if self.frames %30 == 0:
         #     self.image = self.image_reg
@@ -235,9 +223,9 @@ def Game():
         obstacles.draw(screen)
 
         # Display obstacle count
-        obstacle_text = Settings.font.render(f"Score: {obstacle_count}", True, Settings.HEIGHT)
+        obstacle_text = Settings.font.render(f"Score: {player.score}", True, Settings.HEIGHT)
         screen.blit(obstacle_text, (10, 10))
-
+        saved_score = player.score
         pygame.display.update()
         clock.tick(Settings.FPS)
         #return obstacle_count
@@ -249,14 +237,17 @@ def Game():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-
+        player.score = saved_score
         run = pygame.key.get_pressed()
         end_text = Settings.font.render("Press Enter to Start Over", True, Settings.HEIGHT)
         screen.blit(end_text, (150, 100))
-
-        if obstacle_count > Settings.high_score:
-            Settings.high_score = obstacle_count
+        erase_score = pygame.Rect(0,0,200,50)
+        pygame.draw.rect(screen, Settings.WHITE, erase_score)
         obstacle_text = Settings.font.render(f"High score: {Settings.high_score}", True, Settings.HEIGHT)
+        if player.score >= Settings.high_score:
+            obstacle_text = Settings.font.render(f"High score: {player.score}", True, Settings.HEIGHT)
+        
+        
         screen.blit(obstacle_text, (210, 125))
         player.image = player.image_reg
         pygame.display.update()

@@ -150,14 +150,14 @@ class Player:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
             self.vel += self.thrust
-            lloonngg = pygame.transform.scale(frog_g, (frog_g.get_width(), frog_g.get_height() * 6))
+            
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             
             #self.v_jump += settings.player_jump_velocity
-            self.pos -= settings.player_x_vel
+            self.pos += settings.player_x_vel
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             #self.v_jump -= settings.player_jump_velocity
-            self.pos += settings.player_x_vel
+            self.pos -= settings.player_x_vel
     def update_v(self):
         """Update the player's velocity based on gravity and bounce on edges"""
          
