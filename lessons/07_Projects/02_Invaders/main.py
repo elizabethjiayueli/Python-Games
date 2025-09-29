@@ -14,13 +14,13 @@ clock = pygame.time.Clock()
 
 
 
-class Settings:
+class Settings: 
     # Screen
     screen_width = 288
     screen_height = 420
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption('SPACE INVADERS')  
-    FPS = 30
+    FPS =10
     red = (255, 8, 0)
     projectile_speed = 10
     shoot_delay = 250  # 250 milliseconds between shots, or 4 shots per second   
@@ -110,8 +110,25 @@ class Aliens():
     def update(self):
         enemy_list = game.enemies.sprites()
         self.enemy_number = len(enemy_list)
-        for i in range(self.enemy_number):
-            enemy_list[i].velocity = ( -enemy_list[i].velocity[0], 0)
+        
+        rightmost = max(enemy_list, key=lambda enemy: enemy.rect.right)
+        leftmost = min(enemy_list, key=lambda enemy: enemy.rect.left)
+        if rightmost.rect.right >= Settings.screen_width:
+            
+            for i in range(self.enemy_number):
+                print(rightmost.velocity)
+                # neg_vel = rightmost.velocity 
+                enemy_list[i].velocity =(-rightmost.velocity[0], rightmost.velocity[1])
+                enemy_list[i].rect.y += 10
+        if leftmost.rect.left <= 0:
+            for i in range(self.enemy_number):
+                #pos_vel = leftmost.velocity
+                enemy_list[i].velocity =(-leftmost.velocity[0], leftmost.velocity[1])
+                enemy_list[i].rect.y += 10
+    
+       
+        # for i in range(self.enemy_number):
+        #     enemy_list[i].velocity = ( -enemy_list[i].velocity[0], 0)
 
 class Bomb(pygame.sprite.Sprite):
     def __init__(self, position, velocity=Settings.projectile_speed/2):
@@ -218,11 +235,16 @@ class Game:
         return bg_tile
     def handle_events(self):
         for event in pygame.event.get():
+            print(event)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    print("space pressed")
             if event.type == pygame.QUIT:
                 self.running = False
 
 
             # colliders
+            alien_collider = pygame.sprite.spritecollide(self.player, self.enemies, False)
             collider = pygame.sprite.spritecollide(self.player, self.bombs, False)
             if collider:
                 self.bombs.remove(collider[0])
@@ -231,19 +253,25 @@ class Game:
                 self.health -= 1
                 if self.health <= 0:
                     print("Game Over")
-                    self.running = False
+                    running = False
+            if alien_collider:
+                print("Game Over")
+                running = False
+            # Check for collisions between projectiles and enemies
             hit = pygame.sprite.groupcollide(self.projectiles, self.enemies, True, True)
             if hit:
-                print("enemy hit")
+                print("enemy hit" )
                 for enemy in hit.values():
                     self.enemies.remove(enemy[0])
+            else:
+                print("no hit")
             if len(self.enemies) == 0:
                 print("You Win!")
-                self.running = False
+                running = False
          
 game = Game()
 
-running = False
+
 run = True
 running = True
 while running:
