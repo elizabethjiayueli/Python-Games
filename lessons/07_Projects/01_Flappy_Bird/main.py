@@ -1,7 +1,7 @@
 import pygame
 import time
 import random
-from tkinter import messagebox, simpledialog,Tk
+from tkinter import messagebox, simpledialog,Tk  
 window = Tk()
 window.withdraw()
 pygame.init()

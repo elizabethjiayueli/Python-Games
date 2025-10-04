@@ -21,7 +21,7 @@ class Settings:
     LINE_COLOR = (255,192,203)
     PLAYER_COLOR = (0, 255, 0)
     
-    BACKGROUND_COLOR = (0,127,255)
+    BACKGROUND_COLOR = (209, 246, 255)
     TEXT_COLOR = (0, 0, 0)
     FPS = 30
     ANGLE_CHANGE = 3
@@ -82,14 +82,14 @@ class Player:
         
         if self.N > 0:
             self.rect.center += self.step
-            pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, self.final_position, 2)
+            #pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, self.final_position, 2)
             
             
             self.N -= 1
         
 
-        elif show_line:
-            pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, end_position, 2)
+        # elif show_line:
+            #pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, end_position, 2)
         screen.blit(self.image, (x, y))
     def move(self):
         
@@ -169,7 +169,7 @@ def main():
 
     # Set up the display
     screen = pygame.display.set_mode((640, 480))
-    pygame.display.set_caption("Survival Game")
+    pygame.display.set_caption("Ice-Skating Phorg")
 
     # Load the sprite sheet
     filename = images / 'spritesheet.png'  # Replace with your actual file path
@@ -202,7 +202,7 @@ def main():
     key_limit = 0
     while running:
         Alligator.draw_alligator(croc, allig_sprites, allig_index)
-        screen.fill((0,127,255))  # Clear screen with deep blue
+        screen.fill(Settings.BACKGROUND_COLOR)  # Clear screen with deep blue
 
         # Update animation every few frames
         frame_count += 1
@@ -252,7 +252,7 @@ def main():
         composed_alligator = Alligator.draw_alligator(croc, allig_sprites, allig_index)
         screen.blit(composed_alligator,  croc.rect.move(croc.offset))
         
-        screen.blit(log,  sprite_rect.move(0, -100))
+        #screen.blit(log,  sprite_rect.move(0, -100))
 
         collider = pygame.sprite.collide_rect(player, croc)
         if collider:

@@ -29,8 +29,12 @@ def in_or_out(db):
                 price = 200*days + peeps_num
             elif int(peeps_num) >= 7:
                 num_rooms = (simpledialog.askinteger("HOTEL MANAGEMENT", "Please choose 2 or more rooms. Enter the number of rooms you would like."))
+                if num_rooms > len(rooms):
+                    messagebox.showerror("HOTEL MANAGEMENT", "Not enough rooms available. Please try again.")
+                    num_rooms = (simpledialog.askinteger("HOTEL MANAGEMENT", "Please choose 2 or more rooms. Enter the number of rooms you would like."))
                 for i in range(num_rooms):
                     selected_rooms.append(room_func(rooms))
+
                 days = simpledialog.askinteger("HOTEL MANAGEMENT", "How many days are you going to stay?")
                 price = 200*days + peeps_num * num_rooms
             db[ask] = selected_rooms

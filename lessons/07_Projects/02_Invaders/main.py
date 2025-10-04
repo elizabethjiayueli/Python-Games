@@ -20,7 +20,7 @@ class Settings:
     screen_height = 420
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption('SPACE INVADERS')  
-    FPS =10
+    FPS = 30
     red = (255, 8, 0)
     projectile_speed = 10
     shoot_delay = 250  # 250 milliseconds between shots, or 4 shots per second   
@@ -98,12 +98,14 @@ class Alien(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = position)
         self.velocity = pygame.Vector2(2, 0) 
     def update(self):
-        if self.rect.right <= 0 or self.rect.right >= Settings.screen_width:
-            self.velocity = (-self.velocity[0], self.velocity[1])
+        
+        #if self.rect.right <= 0 or self.rect.right >= Settings.screen_width:
+         #   self.velocity = (-self.velocity[0], self.velocity[1])
+        
         self.rect.x += self.velocity[0]
         super().update()
 
-class Aliens():
+class Aliens:
     def __init__(self, aliens):
         self.settings = Settings
         self.game = game
@@ -114,18 +116,20 @@ class Aliens():
         rightmost = max(enemy_list, key=lambda enemy: enemy.rect.right)
         leftmost = min(enemy_list, key=lambda enemy: enemy.rect.left)
         if rightmost.rect.right >= Settings.screen_width:
-            
+            Settings.FPS = 12
             for i in range(self.enemy_number):
-                print(rightmost.velocity)
+                #print(rightmost.velocity)
                 # neg_vel = rightmost.velocity 
                 enemy_list[i].velocity =(-rightmost.velocity[0], rightmost.velocity[1])
                 enemy_list[i].rect.y += 10
+                enemy_list[i].rect.x -= 10
         if leftmost.rect.left <= 0:
             for i in range(self.enemy_number):
                 #pos_vel = leftmost.velocity
                 enemy_list[i].velocity =(-leftmost.velocity[0], leftmost.velocity[1])
                 enemy_list[i].rect.y += 10
-    
+                enemy_list[i].rect.x += 10
+
        
         # for i in range(self.enemy_number):
         #     enemy_list[i].velocity = ( -enemy_list[i].velocity[0], 0)
@@ -235,7 +239,7 @@ class Game:
         return bg_tile
     def handle_events(self):
         for event in pygame.event.get():
-            print(event)
+            #print(event)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     print("space pressed")
@@ -263,8 +267,8 @@ class Game:
                 print("enemy hit" )
                 for enemy in hit.values():
                     self.enemies.remove(enemy[0])
-            else:
-                print("no hit")
+            #else:
+                #print("no hit")
             if len(self.enemies) == 0:
                 print("You Win!")
                 running = False
@@ -282,7 +286,6 @@ while running:
     game.projectiles.draw(Settings.screen)
     game.enemies.update()
     game.enemies.draw(Settings.screen)
-    Aliens.update(game.enemies)
 
     add_obstacle(game.bombs)
     game.bombs.update()
