@@ -28,6 +28,7 @@ class Settings:
     WIDTH, HEIGHT = 600, 300
     PLAYER_SIZE = 25
     position = (100, 1000)
+    enemy_velocity = 2
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, game):
@@ -91,44 +92,45 @@ class Player(pygame.sprite.Sprite):
             
             
 class Alien(pygame.sprite.Sprite):
-    def __init__(self, position):
+    def __init__(self, position, velo):
         super().__init__()
         self.original_image = pygame.image.load(assets/'alien.png')
         self.image = pygame.transform.scale(self.original_image, (Settings.width-20, Settings.height-25))
         self.rect = self.image.get_rect(center = position)
         self.velocity = pygame.Vector2(2, 0) 
+        self.velo=velo
     def update(self):
         
-        #if self.rect.right <= 0 or self.rect.right >= Settings.screen_width:
-         #   self.velocity = (-self.velocity[0], self.velocity[1])
+        if self.rect.left <= 0 or self.rect.right >= Settings.screen_width:
+           self.velo=-self.velo
         
-        self.rect.x += self.velocity[0]
+        
+        self.rect.x += self.velo
         super().update()
 
 class Aliens:
-    def __init__(self, aliens):
+    def __init__(self, enemies):
         self.settings = Settings
-        self.game = game
+        self.game = Game
+        self.enemies = enemies
     def update(self):
         enemy_list = game.enemies.sprites()
         self.enemy_number = len(enemy_list)
+        # for i in range(self.enemy_number):
+        #     f"variable{i}" = enemy_list[i].velo
         
         rightmost = max(enemy_list, key=lambda enemy: enemy.rect.right)
         leftmost = min(enemy_list, key=lambda enemy: enemy.rect.left)
         if rightmost.rect.right >= Settings.screen_width:
-            Settings.FPS = 12
-            for i in range(self.enemy_number):
-                #print(rightmost.velocity)
-                # neg_vel = rightmost.velocity 
-                enemy_list[i].velocity =(-rightmost.velocity[0], rightmost.velocity[1])
-                enemy_list[i].rect.y += 10
-                enemy_list[i].rect.x -= 10
+            for enemy in enemy_list:
+                #enemy.rect.y += 10
+                enemy.rect.x -= 10
+                enemy.velocity = ( -enemy.velocity[0], 0)
         if leftmost.rect.left <= 0:
-            for i in range(self.enemy_number):
-                #pos_vel = leftmost.velocity
-                enemy_list[i].velocity =(-leftmost.velocity[0], leftmost.velocity[1])
-                enemy_list[i].rect.y += 10
-                enemy_list[i].rect.x += 10
+            for enemy in enemy_list:
+                enemy.rect.y += 10
+                
+                enemy.velocity = ( -enemy.velocity[0], 0)
 
        
         # for i in range(self.enemy_number):
@@ -210,6 +212,8 @@ class Game:
         self.enemies = pygame.sprite.Group()
         self.bombs = pygame.sprite.Group()
         self.bomb_num = len(self.bombs)
+
+        self.aliens = Aliens(self.enemies)
         
         y = 10
         for i in range(24):
@@ -218,7 +222,7 @@ class Game:
                 y += 30
                 x = 0
             x = (i % 8) * 30    
-            self.enemies.add(Alien(position=(x + 30,   y + 10))) 
+            self.enemies.add(Alien(position=(x + 30,   y + 10), velo=Settings.enemy_velocity)) 
 
 
         #health
@@ -286,6 +290,7 @@ while running:
     game.projectiles.draw(Settings.screen)
     game.enemies.update()
     game.enemies.draw(Settings.screen)
+    game.aliens.update()
 
     add_obstacle(game.bombs)
     game.bombs.update()

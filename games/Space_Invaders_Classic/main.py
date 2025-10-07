@@ -143,8 +143,10 @@ class EnemiesGroup(sprite.Group):
         if current_time - self.timer > self.moveTime:
             if self.direction == 1:
                 max_move = self.rightMoves + self.rightAddMove
+                print('Moving to the right')
             else:
                 max_move = self.leftMoves + self.leftAddMove
+                print('Moving to the left')
 
             if self.moveNumber >= max_move:
                 self.leftMoves = 30 + self.rightAddMove
@@ -154,14 +156,16 @@ class EnemiesGroup(sprite.Group):
                 self.bottom = 0
                 for enemy in self:
                     enemy.rect.y += ENEMY_MOVE_DOWN
+                    print('Moving down')
                     enemy.toggle_image()
                     if self.bottom < enemy.rect.y + 35:
                         self.bottom = enemy.rect.y + 35
             else:
                 velocity = 10 if self.direction == 1 else -10
                 for enemy in self:
+                    
                     enemy.rect.x += velocity
-                    enemy.toggle_image()
+                    enemy.toggle_image() 
                 self.moveNumber += 1
 
             self.timer += self.moveTime

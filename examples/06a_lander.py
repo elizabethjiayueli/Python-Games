@@ -23,7 +23,7 @@ lander_width, lander_height = 50, 50
 lander_speed = 0
 lander_acceleration = 0.1
 fuel = 100
-fuel_consumption = 0.2
+fuel_consumption = 0
 lander_speed_x = 0
 
 fuel_cell_width, fuel_cell_height = 30, 30
@@ -137,7 +137,7 @@ while running:
         window.blit(high_score_text, (10, 80))
 
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(50)
 
     # Display win/lose stats and wait for key press to start next game
     font = pygame.font.Font(None, 48)
