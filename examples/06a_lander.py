@@ -17,11 +17,11 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
-
+# input(")
 # Define game objects
 lander_width, lander_height = 50, 50
 lander_speed = 0
-lander_acceleration = 0.1
+lander_acceleration = 0.5
 fuel = 100
 fuel_consumption = 0
 lander_speed_x = 0
@@ -66,7 +66,7 @@ while running:
             lander_speed_x -= 0.1
         if keys[pygame.K_RIGHT]:
             lander_speed_x += 0.1
-
+        
         # Update lander position
         lander.y += lander_speed
         lander.x += lander_speed_x

@@ -28,7 +28,9 @@ class Settings:
     WIDTH, HEIGHT = 600, 300
     PLAYER_SIZE = 25
     position = (100, 1000)
-    enemy_velocity = 2
+    enemy_velocity = 1
+    y = 10
+    level = 1
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, game):
@@ -113,24 +115,56 @@ class Aliens:
         self.settings = Settings
         self.game = Game
         self.enemies = enemies
+    # def change_direction(self):
+    #     enemy_list = game.enemies.sprites()
+    #     for enemy in enemy_list:
+    #         enemy.velocity = (-enemy.velocity[0], 0)
     def update(self):
         enemy_list = game.enemies.sprites()
         self.enemy_number = len(enemy_list)
+        
         # for i in range(self.enemy_number):
         #     f"variable{i}" = enemy_list[i].velo
-        
-        rightmost = max(enemy_list, key=lambda enemy: enemy.rect.right)
-        leftmost = min(enemy_list, key=lambda enemy: enemy.rect.left)
-        if rightmost.rect.right >= Settings.screen_width:
-            for enemy in enemy_list:
-                #enemy.rect.y += 10
-                enemy.rect.x -= 10
-                enemy.velocity = ( -enemy.velocity[0], 0)
-        if leftmost.rect.left <= 0:
-            for enemy in enemy_list:
-                enemy.rect.y += 10
+        if self.enemy_number > 0:
+
+            rightmost = max(enemy_list, key=lambda enemy: enemy.rect.right)
+            leftmost = min(enemy_list, key=lambda enemy: enemy.rect.left)
+        else:
+            Settings.y=15*Settings.level
+            for i in range(24):
                 
-                enemy.velocity = ( -enemy.velocity[0], 0)
+                if i % 8==0:
+                    Settings.y += 30
+                    x = 0
+                x = (i % 8) * 30    
+                game.enemies.add(Alien(position=(x + 30,   Settings.y + 10), velo=Settings.enemy_velocity)) 
+            enemy_list = game.enemies.sprites()
+            self.enemy_number = len(enemy_list)
+            rightmost = max(enemy_list, key=lambda enemy: enemy.rect.right)
+            leftmost = min(enemy_list, key=lambda enemy: enemy.rect.left)
+            Settings.level += 1
+            print(f"Level {Settings.level}: PRESS ENTER TO CONTINUE")
+            running = False
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_RETURN]:
+                running = True
+                print("Game Resumed")
+
+        if rightmost.rect.right >= Settings.screen_width:
+            
+            for enemy in enemy_list:
+                enemy.rect.y += 5
+                
+                enemy.velo = -abs(enemy.velo) 
+                enemy.rect.x -= 1            
+                
+        elif leftmost.rect.left <= 0:
+            for enemy in enemy_list:
+                enemy.rect.y += 5
+                
+                enemy.velo = abs(enemy.velo) 
+                enemy.rect.x += 5   
+            #self.change_direction()
 
        
         # for i in range(self.enemy_number):
@@ -251,31 +285,7 @@ class Game:
                 self.running = False
 
 
-            # colliders
-            alien_collider = pygame.sprite.spritecollide(self.player, self.enemies, False)
-            collider = pygame.sprite.spritecollide(self.player, self.bombs, False)
-            if collider:
-                self.bombs.remove(collider[0])
-                self.health-=1
-                # self.health_bars[self.health_bars[collider[0]] - 1].fill((0,0,0))
-                self.health -= 1
-                if self.health <= 0:
-                    print("Game Over")
-                    running = False
-            if alien_collider:
-                print("Game Over")
-                running = False
-            # Check for collisions between projectiles and enemies
-            hit = pygame.sprite.groupcollide(self.projectiles, self.enemies, True, True)
-            if hit:
-                print("enemy hit" )
-                for enemy in hit.values():
-                    self.enemies.remove(enemy[0])
-            #else:
-                #print("no hit")
-            if len(self.enemies) == 0:
-                print("You Win!")
-                running = False
+            
          
 game = Game()
 
@@ -291,7 +301,29 @@ while running:
     game.enemies.update()
     game.enemies.draw(Settings.screen)
     game.aliens.update()
-
+    # colliders
+    alien_collider = pygame.sprite.spritecollide(game.player, game.enemies, False)
+    collider = pygame.sprite.spritecollide(game.player, game.bombs, False)
+    if collider:
+        game.bombs.remove(collider[0])
+        game.health-=1
+        # self.health_bars[self.health_bars[collider[0]] - 1].fill((0,0,0))
+        game.health -= 1
+        if game.health <= 0:
+            print("Game Over")
+            running = False
+    if alien_collider:
+        print("Game Over")
+        running = False
+    # Check for collisions between projectiles and enemies
+    hit = pygame.sprite.groupcollide(game.projectiles, game.enemies, True, True)
+    if hit:
+        #print("enemy hit" )
+        for enemy in hit.values():
+            game.enemies.remove(enemy[0])
+    #else:
+        #print("no hit")
+    
     add_obstacle(game.bombs)
     game.bombs.update()
     game.bombs.draw(Settings.screen)
