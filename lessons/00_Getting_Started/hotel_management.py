@@ -37,7 +37,10 @@ def in_or_out(db):
 
                 days = simpledialog.askinteger("HOTEL MANAGEMENT", "How many days are you going to stay?")
                 price = 200*days + peeps_num * num_rooms
-            db[ask] = selected_rooms
+            if db.get(ask):
+                db[ask].extend(selected_rooms)
+            else:
+                db[ask] = selected_rooms
             messagebox.showinfo("HOTEL MANAGEMENT",f"Your price is $ {price}")
         elif check == "check out" or check == "out":
             if ask in db:
