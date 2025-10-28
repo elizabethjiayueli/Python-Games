@@ -24,7 +24,7 @@ class Settings:
     WIDTH, HEIGHT = 600, 300
     PLAYER_SIZE = 25
     position = (100, 1000)
-screen = pygame.display.set_mode((Settings.WIDTH, Settings.HEIGHT))
+#screen = pygame.display.set_mode((Settings.WIDTH, Settings.HEIGHT))
 def scale_sprites(sprites, scale):
     """Scale a list of sprites by a given factor.
 
@@ -55,6 +55,7 @@ class Player(pygame.sprite.Sprite):
         self.N = 0
         self.step = 0
         self.init_position, self.final_position = 0,0
+        self.image = self.frog_sprites[0]
 
 
     def draw(self, frog_index, show_line=True):
@@ -137,72 +138,73 @@ class Game:
     # Main game loop
     running = True
     
-    sprite_rect = frog_sprites[0].get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+    sprite_rect = frog_sprites[0].get_rect(center=(Settings.screen.get_width() // 2, Settings.screen.get_height() // 2))
     player = Player(sprite_rect, frog_sprites)
     player_group = pygame.sprite.GroupSingle(player)
     
     pygame.math.Vector2(1, 0)
-    
-    key_limit = 0
-    while running:
-        
-
-        # Update animation every few frames
-        frame_count += 1
-        key_limit += 1
-        
-
-        
-        
-        keys = pygame.key.get_pressed()
-        
-        if key_limit%2 == 0: # Limit frequency of key presses so the user can set exact angles
-            if keys[pygame.K_RIGHT]:
-                player.direction_vector = player.direction_vector.rotate(-Settings.ANGLE_CHANGE)
-            elif keys[pygame.K_LEFT]: 
-                player.direction_vector = player.direction_vector.rotate(Settings.ANGLE_CHANGE)
-               
-        if keys[pygame.K_UP]:
-            player.direction_vector.scale_to_length(player.direction_vector.length() + Settings.LENGTH_CHANGE)
-        elif keys[pygame.K_DOWN]:
-            if player.direction_vector.length() > Settings.LENGTH_CHANGE:
-                player.direction_vector.scale_to_length(player.direction_vector.length() - Settings.LENGTH_CHANGE)
-            
-        elif keys[pygame.K_SPACE] and key_limit%3 == 0:
-            player.move()
-            
-        elif keys[pygame.K_w]:
-            player.rect.center += pygame.Vector2(0, -1)
-        elif keys[pygame.K_s]:
-            player.rect.center += pygame.Vector2(0, 1)
-        elif keys[pygame.K_a]:
-            player.rect.center += pygame.Vector2(-1, 0)
-        elif keys[pygame.K_d]:
-            player.rect.center += pygame.Vector2(1, 0)
-        if frame_count % frames_per_image == 0: 
-            if player.N<=0:
-                frog_index = (frog_index + 1) % len(frog_sprites)
-            
-        
-    
-        
-        # Get the current sprite and display it in the middle of the screen
-        
-        
-        #pygame.draw.rect(screen, Settings.LINE_COLOR, player.rect)
-        player.draw(frog_index)
-
-            
-         
 game = Game()
-
-
-run = True
+key_limit = 0
 running = True
 while running:
+    
+
+    # Update animation every few frames
+    game.frame_count += 1
+    key_limit += 1
+    
+
+    
+    
+    keys = pygame.key.get_pressed()
+    
+    if key_limit%2 == 0: # Limit frequency of key presses so the user can set exact angles
+        if keys[pygame.K_RIGHT]:
+            game.player.rect.x += 1
+        elif keys[pygame.K_LEFT]: 
+            game.player.rect.x -= 1
+            
+    if keys[pygame.K_UP]:
+        game.player.rect.y -= 1
+    elif keys[pygame.K_DOWN]:
+        if game.player.rect.y > 1:
+            game.player.rect.y += 1
+        
+    elif keys[pygame.K_SPACE] and key_limit%3 == 0:
+        game.player.move()
+        
+    elif keys[pygame.K_w]:
+        game.player.rect.center += pygame.Vector2(0, -1)
+    elif keys[pygame.K_s]:
+        game.player.rect.center += pygame.Vector2(0, 1)
+    elif keys[pygame.K_a]:
+        game.player.rect.center += pygame.Vector2(-1, 0)
+    elif keys[pygame.K_d]:
+        game.player.rect.center += pygame.Vector2(1, 0)
+    if game.frame_count % game.frames_per_image == 0: 
+        if game.player.N<=0:
+            game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
+            game.player.draw(game.frog_index)
+    
+
+    
+    # Get the current sprite and display it in the middle of the screen
+    
+    
+    #pygame.draw.rect(screen, Settings.LINE_COLOR, player.rect)
+    
+
+        
+        
+
+
+
+#
     Settings.screen.blit(game.full_background, (0,0))
     game.handle_events()
+    game.player_group.draw(Settings.screen)
     pygame.display.flip()
+    game.player_group.draw(Settings.screen)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -212,4 +214,4 @@ while running:
     
 
     
-    clock.tick(Settings.FPS)
+clock.tick(Settings.FPS)
