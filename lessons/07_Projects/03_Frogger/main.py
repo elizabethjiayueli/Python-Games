@@ -15,7 +15,7 @@ clock = pygame.time.Clock()
 class Settings: 
     # Screen
     screen_width = 550
-    screen_height = 520
+    screen_height = 300
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption('FROGGER')  
     FPS = 30
@@ -78,7 +78,15 @@ class Player(pygame.sprite.Sprite):
 
         # elif show_line:
             #pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, end_position, 2)
-        
+    def update(self):
+        if self.rect.y < 2:
+            self.rect.y = 2
+        if self.rect.y > Settings.screen_height - self.rect.height:
+            self.rect.y = Settings.screen_height - self.rect.height
+        if self.rect.x < 0:
+            self.rect.x = 0
+        if self.rect.x > Settings.screen_width - self.rect.width:
+            self.rect.x = Settings.screen_width - self.rect.width
 
 class Car(pygame.sprite.Sprite):
     def __init__(self, game, direction):
@@ -205,6 +213,7 @@ while running:
     game.player_group.draw(Settings.screen)
     pygame.display.flip()
     game.player_group.draw(Settings.screen)
+    game.player.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
