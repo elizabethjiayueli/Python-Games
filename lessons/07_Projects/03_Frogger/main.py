@@ -91,8 +91,17 @@ class Player(pygame.sprite.Sprite):
 class Car(pygame.sprite.Sprite):
     def __init__(self, game, direction):
         super().__init__()
-        pass
-
+        self.rect.y= random.randint(150, 250)
+        self.direction = direction
+        if direction == 'left':
+            self.direction_vector = pygame.math.Vector2(-1, 0)
+        if direction == 'right':
+            self.direction_vector = pygame.math.Vector2(1, 0)
+    def update(self):
+        self.x += self.direction_vector.x * Settings.obstacle_speed
+        self.rect.x = self.x
+        if self.rect.right < 0 or self.rect.left > Settings.screen_width:
+            self.kill()
 class Log(pygame.sprite.Sprite):
     def __init__(self, game):
         super().__init__()
@@ -178,9 +187,7 @@ while running:
         if game.player.rect.y > 1:
             game.player.rect.y += 1
         
-    elif keys[pygame.K_SPACE] and key_limit%3 == 0:
-        game.player.move()
-        
+    
     elif keys[pygame.K_w]:
         game.player.rect.center += pygame.Vector2(0, -1)
     elif keys[pygame.K_s]:

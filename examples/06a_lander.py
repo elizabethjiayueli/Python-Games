@@ -102,7 +102,7 @@ while running:
 
         # Check for collision with the landing pad
         if lander.colliderect(landing_pad):
-            if lander_speed < 2:
+            if lander_speed < 5:
                 print("Congratulations! You landed safely.")
                 wins += 1
                 score += 100

@@ -25,6 +25,8 @@ class Settings:
     gravity = -1
     flap_y_velocity = 12  
     player_y_velocity = 0
+    
+
 
 class Flappy(pygame.sprite.Sprite):
     def __init__(self):
@@ -76,7 +78,8 @@ class Pipe(pygame.sprite.Sprite):
         if flipped == True:
             self.image = pygame.transform.flip(self.image, False, True)
         self.rect = self.image.get_rect()
-        #Settings.screen.blit(self.image, Settings.screen)
+        #Settings.screen.blit(self
+        # .image, Settings.screen)
         self.rect[0] = Settings.screen_width
     def update(self):
         self.rect[0] -= 5
@@ -107,7 +110,7 @@ class Pipes():
             
         
 class Game():
-    
+    score = 0
     game_over = False
     last_obstacle_time = pygame.time.get_ticks()
     pygame.key.set_repeat(2000)
@@ -159,7 +162,7 @@ while running:
         
         current_time = pygame.time.get_ticks()
         time_left = countdown_duration - (current_time - countdown_start_time)
-        
+        Game.score = 0
         if time_left <= 0:
             game_active = True
             pygame.display.flip()
@@ -186,6 +189,7 @@ while running:
             
             
             game.score = Game.score
+             
             while not pygame.key.get_pressed()[pygame.K_RETURN]:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -212,7 +216,7 @@ while running:
         text_rect = countdown_text_surface.get_rect(center=(Settings.screen_width / 2, Settings.screen_height / 2))
         Settings.screen.blit(countdown_text_surface, text_rect)
     else:
-        score_text = font.render(str(game.score), True, (0, 0, 0)) 
+        
         Settings.screen.blit(score_text, (32, 48)) 
         game.player_group.draw(Settings.screen)
         game.obstacles.draw(Settings.screen)
