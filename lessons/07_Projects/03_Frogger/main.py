@@ -95,8 +95,14 @@ class Car(pygame.sprite.Sprite):
         self.direction = direction
         if direction == 'left':
             self.direction_vector = pygame.math.Vector2(-1, 0)
+            self.image = pygame.image.load(assets/'carLeft.png')
+            self.rect.x = 0
+        
         if direction == 'right':
             self.direction_vector = pygame.math.Vector2(1, 0)
+            self.image = pygame.image.load(assets/'carRight.png')
+            self.rect.x = Settings.screen_width
+          
     def update(self):
         self.x += self.direction_vector.x * Settings.obstacle_speed
         self.rect.x = self.x

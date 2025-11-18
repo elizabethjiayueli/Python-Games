@@ -148,7 +148,7 @@ countdown_font = pygame.font.SysFont(None, 100)
 font = pygame.font.SysFont(None, 40) 
 text = Game.score
 game = Game()
-
+score_text = font.render(Game.score, True, (255, 255, 255))
 
 running = True
 while running:
@@ -189,7 +189,8 @@ while running:
             
             
             game.score = Game.score
-             
+            
+
             while not pygame.key.get_pressed()[pygame.K_RETURN]:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
