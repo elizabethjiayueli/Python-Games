@@ -186,7 +186,7 @@ def main():
     log = pygame.transform.scale(log, (log.get_width() * 4, log.get_height() * 4))
 
     # Variables for animation
-    frog_index = 0
+    frog_index = 0 
     allig_index = 0
     frames_per_image = 6
     frame_count = 0
