@@ -200,18 +200,39 @@ while running:
     
     elif keys[pygame.K_w]:
         player.rect.center += pygame.Vector2(0, -1)
+        if game.frame_count % game.frames_per_image == 0: 
+            if player.N<=0:
+                game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
+                player.draw(game.frog_index)
+            player.image = game.frog_sprites[game.frog_index]
     elif keys[pygame.K_s]:
         player.rect.center += pygame.Vector2(0, 1)
+        if game.frame_count % game.frames_per_image == 0: 
+            if player.N<=0:
+                game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
+                player.draw(game.frog_index)
+            player.image = game.frog_sprites[game.frog_index]
     elif keys[pygame.K_a]:
         player.rect.center += pygame.Vector2(-1, 0)
+        if game.frame_count % game.frames_per_image == 0: 
+            if player.N<=0:
+                game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
+                player.draw(game.frog_index)
+            player.image = game.frog_sprites[game.frog_index]
     elif keys[pygame.K_d]:
         player.rect.center += pygame.Vector2(1, 0)
-    if game.frame_count % game.frames_per_image == 0: 
-        if player.N<=0:
-            game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
-            player.draw(game.frog_index)
-        player.image = game.frog_sprites[game.frog_index]
-    
+        if game.frame_count % game.frames_per_image == 0: 
+            if player.N<=0:
+                game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
+                player.draw(game.frog_index)
+            player.image = game.frog_sprites[game.frog_index]
+    # if keys:
+        
+    #     else:
+    #         pass
+    # elif not keys: 
+    #     player.draw(game.frog_index)
+        
     # Get the current sprite and display it in the middle of the screen
     
     
@@ -226,13 +247,16 @@ while running:
 #
     Settings.screen.blit(game.full_background, (0,0))
     game.handle_events()
-    player_group.draw(Settings.screen)
-    pygame.display.flip()
-    player_group.draw(Settings.screen)
-    player.update()
+    # player_group.draw(Settings.screen)
+    # pygame.display.flip()
+    
+    
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+    player.update()
+    player_group.draw(Settings.screen)
     pygame.display.flip() 
 
         

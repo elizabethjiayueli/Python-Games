@@ -173,7 +173,7 @@ while running:
             countdown_seconds = int(time_left / 1000) + 1 
             text_to_display = str(countdown_seconds)
     
-
+ 
             
     else: 
         game.player.update()
