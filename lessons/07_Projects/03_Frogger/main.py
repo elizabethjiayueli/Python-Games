@@ -123,7 +123,7 @@ class Game:
         self.cellsize = (16, 16)  # Replace with the size of your sprites
         self.spritesheet = SpriteSheet(self.filename, self.cellsize)
         self.frog_sprites = scale_sprites(self.spritesheet.load_strip(0, 4, colorkey=-1) , 4)
-
+        
     # Compose an image
         log = self.spritesheet.compose_horiz([24, 25, 26], colorkey=-1)
         log = pygame.transform.scale(log, (log.get_width() * 4, log.get_height() * 4))
@@ -167,7 +167,7 @@ game = Game()
 sprite_rect = game.frog_sprites[0].get_rect(center=(Settings.screen.get_width() // 2, Settings.screen.get_height() // 2))
 player = Player(sprite_rect, game.frog_sprites)
 player_group = pygame.sprite.GroupSingle(player)
-
+hold=False
 pygame.math.Vector2(1, 0)
 key_limit = 0
 running = True
@@ -177,55 +177,65 @@ while running:
     # Update animation every few frames
     game.frame_count += 1
     key_limit += 1
+   
     
 
     
     
     keys = pygame.key.get_pressed()
     
-    if key_limit%2 == 0: # Limit frequency of key presses so the user can set exact angles
-        if keys[pygame.K_RIGHT]:
-            player.rect.x += 1
-        elif keys[pygame.K_LEFT]: 
-            player.rect.x -= 1
+    if hold == False:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            player.rect.x += 50
+            hold = True
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]: 
+            player.rect.x -= 50  
+            hold = True
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            player.rect.y -= 50
+            hold = True
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             
-    if keys[pygame.K_UP]:
-        player.rect.y -= 1
-    elif keys[pygame.K_DOWN]:
-        if player.rect.y > 1:
-            player.rect.y += 1
-    if game.frame_count % 6 == 0: 
-            if player.N<=0:
-                game.frog_index = (game.frog_index + 1) % len(frog_sprites)
-    
-    elif keys[pygame.K_w]:
-        player.rect.center += pygame.Vector2(0, -1)
-        if game.frame_count % game.frames_per_image == 0: 
-            if player.N<=0:
-                game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
-                player.draw(game.frog_index)
-            player.image = game.frog_sprites[game.frog_index]
-    elif keys[pygame.K_s]:
-        player.rect.center += pygame.Vector2(0, 1)
-        if game.frame_count % game.frames_per_image == 0: 
-            if player.N<=0:
-                game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
-                player.draw(game.frog_index)
-            player.image = game.frog_sprites[game.frog_index]
-    elif keys[pygame.K_a]:
-        player.rect.center += pygame.Vector2(-1, 0)
-        if game.frame_count % game.frames_per_image == 0: 
-            if player.N<=0:
-                game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
-                player.draw(game.frog_index)
-            player.image = game.frog_sprites[game.frog_index]
-    elif keys[pygame.K_d]:
-        player.rect.center += pygame.Vector2(1, 0)
-        if game.frame_count % game.frames_per_image == 0: 
-            if player.N<=0:
-                game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
-                player.draw(game.frog_index)
-            player.image = game.frog_sprites[game.frog_index]
+            player.rect.y += 50
+            hold = True
+    if not any(keys):
+        hold = False
+
+
+
+
+    # if game.frame_count % 6 == 0: 
+    #         if player.N<=0:
+    #             game.frog_index = (game.frog_index + 1) % len(frog_sprites)
+
+    # elif keys[pygame.K_w]:
+    #     player.rect.center += pygame.Vector2(0, -1)
+    #     if game.frame_count % game.frames_per_image == 0: 
+    #         if player.N<=0:
+    #             game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
+    #             player.draw(game.frog_index)
+    #         player.image = game.frog_sprites[game.frog_index]
+    # elif keys[pygame.K_s]:
+    #     player.rect.center += pygame.Vector2(0, 1)
+    #     if game.frame_count % game.frames_per_image == 0: 
+    #         if player.N<=0:
+    #             game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
+    #             player.draw(game.frog_index)
+    #         player.image = game.frog_sprites[game.frog_index]
+    # elif keys[pygame.K_a]:
+    #     player.rect.center += pygame.Vector2(-1, 0)
+    #     if game.frame_count % game.frames_per_image == 0: 
+    #         if player.N<=0:
+    #             game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
+    #             player.draw(game.frog_index)
+    #         player.image = game.frog_sprites[game.frog_index]
+    # elif keys[pygame.K_d]:
+    #     player.rect.center += pygame.Vector2(1, 0)
+    #     if game.frame_count % game.frames_per_image == 0: 
+    #         if player.N<=0:
+    #             game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
+    #             player.draw(game.frog_index)
+    #         player.image = game.frog_sprites[game.frog_index]
     # if keys:
         
     #     else:
