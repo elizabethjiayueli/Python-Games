@@ -92,23 +92,30 @@ class Player(pygame.sprite.Sprite):
 class Car(pygame.sprite.Sprite):
     def __init__(self, game, direction):
         super().__init__()
-        self.rect.y= random.randint(150, 250)
-        self.direction = direction
-        if direction == 'left':
-            self.direction_vector = pygame.math.Vector2(-1, 0)
-            self.image = pygame.image.load(assets/'carLeft.png')
-            self.rect.x = 0
+        self.original_image = pygame.image.load(assets/'carLeft.png')
+        self.rect = self.original_image.get_rect()
         
-        if direction == 'right':
-            self.direction_vector = pygame.math.Vector2(1, 0)
-            self.image = pygame.image.load(assets/'carRight.png')
-            self.rect.x = Settings.screen_width
+        self.image = pygame.transform.scale(self.original_image, (65, 40))
+        self.direction = direction
+        if direction == 0:
+            self.move = -0.5
+            
+            self.rect.left = Settings.screen_width
+        
+        if direction == 1:
+            self.move = 0.5
+            self.largeimage = pygame.transform.flip(pygame.image.load(assets/'carLeft.png'), True, False)
+            self.image = pygame.transform.scale(self.largeimage, (65, 40))
+            self.rect.right = 6
           
     def update(self):
-        self.x += self.direction_vector.x * Settings.obstacle_speed
-        self.rect.x = self.x
-        if self.rect.right < 0 or self.rect.left > Settings.screen_width:
+        self.rect[0] += self.move 
+        if self.direction == 0 and self.rect.right < 0:
             self.kill()
+            print("kill")
+        if self.direction == 1 and self.rect.left > Settings.screen_width:
+            self.kill()
+            print("kill")
 class Log(pygame.sprite.Sprite):
     def __init__(self, game):
         super().__init__()
@@ -137,7 +144,13 @@ class Game:
 
     def create_obstacles(self):
         # Create cars and logs and add them to their respective groups
-        pass
+        if self.frame_count % 500 == 0:
+            direction = random.choice([0, 1])
+            car = Car(self, direction)
+            car.rect.y = random.randint(10, (Settings.screen_height//5)*5-20)
+            print(car.rect.y)
+            self.cars.add(car)
+            self.all_sprites.add(car)
     def make_tiled_bg(self, screen, background):
         # Scale background to match the screen height
         bg_tile = pygame.image.load(background).convert()
@@ -154,6 +167,7 @@ class Game:
                     print("space pressed")
             if event.type == pygame.QUIT:
                 self.running = False
+        
     
     
 
@@ -167,6 +181,8 @@ game = Game()
 sprite_rect = game.frog_sprites[0].get_rect(center=(Settings.screen.get_width() // 2, Settings.screen.get_height() // 2))
 player = Player(sprite_rect, game.frog_sprites)
 player_group = pygame.sprite.GroupSingle(player)
+
+
 hold=False
 pygame.math.Vector2(1, 0)
 key_limit = 0
@@ -177,11 +193,10 @@ while running:
     # Update animation every few frames
     game.frame_count += 1
     key_limit += 1
-   
+
+    # Create cars
     
 
-    
-    
     keys = pygame.key.get_pressed()
     
     if hold == False:
@@ -201,73 +216,23 @@ while running:
     if not any(keys):
         hold = False
 
-
-
-
-    # if game.frame_count % 6 == 0: 
-    #         if player.N<=0:
-    #             game.frog_index = (game.frog_index + 1) % len(frog_sprites)
-
-    # elif keys[pygame.K_w]:
-    #     player.rect.center += pygame.Vector2(0, -1)
-    #     if game.frame_count % game.frames_per_image == 0: 
-    #         if player.N<=0:
-    #             game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
-    #             player.draw(game.frog_index)
-    #         player.image = game.frog_sprites[game.frog_index]
-    # elif keys[pygame.K_s]:
-    #     player.rect.center += pygame.Vector2(0, 1)
-    #     if game.frame_count % game.frames_per_image == 0: 
-    #         if player.N<=0:
-    #             game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
-    #             player.draw(game.frog_index)
-    #         player.image = game.frog_sprites[game.frog_index]
-    # elif keys[pygame.K_a]:
-    #     player.rect.center += pygame.Vector2(-1, 0)
-    #     if game.frame_count % game.frames_per_image == 0: 
-    #         if player.N<=0:
-    #             game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
-    #             player.draw(game.frog_index)
-    #         player.image = game.frog_sprites[game.frog_index]
-    # elif keys[pygame.K_d]:
-    #     player.rect.center += pygame.Vector2(1, 0)
-    #     if game.frame_count % game.frames_per_image == 0: 
-    #         if player.N<=0:
-    #             game.frog_index = (game.frog_index + 1) % len(game.frog_sprites)
-    #             player.draw(game.frog_index)
-    #         player.image = game.frog_sprites[game.frog_index]
-    # if keys:
-        
-    #     else:
-    #         pass
-    # elif not keys: 
-    #     player.draw(game.frog_index)
-        
-    # Get the current sprite and display it in the middle of the screen
-    
-    
-    #pygame.draw.rect(screen, Settings.LINE_COLOR, player.rect)
-    
-
-        
-        
-
-
-
-#
     Settings.screen.blit(game.full_background, (0,0))
     game.handle_events()
     # player_group.draw(Settings.screen)
     # pygame.display.flip()
-    
+    player.update()
+    player_group.draw(Settings.screen)
+    game.create_obstacles()
+    for car in game.cars:
+        car.update()
+    game.cars.draw(Settings.screen)
+    pygame.display.flip() 
     
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    player.update()
-    player_group.draw(Settings.screen)
-    pygame.display.flip() 
+    
 
         
     
