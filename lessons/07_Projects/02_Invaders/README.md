@@ -1,4 +1,4 @@
-# League Invaders
+    # League Invaders
 
 Here are the general rules for the classic arcade game **Space Invaders**:
 

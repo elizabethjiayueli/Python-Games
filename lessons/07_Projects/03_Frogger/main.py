@@ -79,15 +79,16 @@ class Player(pygame.sprite.Sprite):
         # elif show_line:
             #pygame.draw.line(screen, Settings.LINE_COLOR, self.rect.center, end_position, 2)
     def update(self):
-        if self.rect.y < 2:
-            self.rect.y = 2
+        if self.rect.y < 0:
+            self.rect.y = 0
         if self.rect.y > Settings.screen_height - self.rect.height:
             self.rect.y = Settings.screen_height - self.rect.height
         if self.rect.x < 0:
             self.rect.x = 0
         if self.rect.x > Settings.screen_width - self.rect.width:
             self.rect.x = Settings.screen_width - self.rect.width
-        
+        if self.rect.y >=Settings.screen_height:
+            self.rect.y = 0
 
 class Car(pygame.sprite.Sprite):
     def __init__(self, game, direction):
@@ -106,16 +107,28 @@ class Car(pygame.sprite.Sprite):
             self.move = 0.5
             self.largeimage = pygame.transform.flip(pygame.image.load(assets/'carLeft.png'), True, False)
             self.image = pygame.transform.scale(self.largeimage, (65, 40))
-            self.rect.right = 6
+            self.rect.right = 0
           
     def update(self):
-        self.rect[0] += self.move 
-        if self.direction == 0 and self.rect.right < 0:
+        #print(self.rect[0], "before move")
+        if self.direction == 0:
+            self.rect[0] += self.move 
+        if self.direction == 1:
+            self.rect.right += self.move
+        # print(self.rect[0], "after move")
+        # print(self.direction, "direction")
+        # print(self.rect.right, self.rect.left, "positions")
+        if self.direction == 0 and self.rect.left <= 0:
+            
             self.kill()
-            print("kill")
-        if self.direction == 1 and self.rect.left > Settings.screen_width:
+            #print("kill")
+            
+        if self.direction == 1 and self.rect.left >= Settings.screen_width:
             self.kill()
-            print("kill")
+            #print("kill")
+        if self.rect.y <= 50 or self.rect.y >= Settings.screen_height-80:
+            self.kill()
+            #print("remove offscreen")
 class Log(pygame.sprite.Sprite):
     def __init__(self, game):
         super().__init__()
@@ -144,11 +157,11 @@ class Game:
 
     def create_obstacles(self):
         # Create cars and logs and add them to their respective groups
-        if self.frame_count % 500 == 0:
+        if self.frame_count % 80 == 0:
             direction = random.choice([0, 1])
             car = Car(self, direction)
             car.rect.y = random.randint(10, (Settings.screen_height//5)*5-20)
-            print(car.rect.y)
+            #print(car.rect.y)
             self.cars.add(car)
             self.all_sprites.add(car)
     def make_tiled_bg(self, screen, background):
@@ -162,9 +175,9 @@ class Game:
     def handle_events(self):
         for event in pygame.event.get():
             #print(event)
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    print("space pressed")
+            # if event.type == pygame.KEYDOWN:
+            #     if event.key == pygame.K_SPACE:
+            #         #print("space pressed")
             if event.type == pygame.QUIT:
                 self.running = False
         
