@@ -22,8 +22,8 @@ class Settings:
     pygame.display.set_caption('Flappy Birb')  
     FPS = 30
     # Gravity
-    gravity = -1
-    flap_y_velocity = 12  
+    gravity = -2
+    flap_y_velocity = 15 
     player_y_velocity = 0
     
 
