@@ -16,6 +16,7 @@ db = {}
 def in_or_out(db):
     
     rooms = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+    print (len(rooms))
     while True:
         print(f"Available rooms: {db}")
         ask = simpledialog.askstring("HOTEL MANAGEMENT", "What is your name?")
@@ -29,7 +30,7 @@ def in_or_out(db):
                 price = 200*days + peeps_num
             elif int(peeps_num) >= 7:
                 num_rooms = (simpledialog.askinteger("HOTEL MANAGEMENT", "Please choose 2 or more rooms. Enter the number of rooms you would like."))
-                if num_rooms > len(rooms):
+                while num_rooms > len(rooms):
                     messagebox.showerror("HOTEL MANAGEMENT", "Not enough rooms available. Please try again.")
                     num_rooms = (simpledialog.askinteger("HOTEL MANAGEMENT", "Please choose 2 or more rooms. Enter the number of rooms you would like."))
                 for i in range(num_rooms):

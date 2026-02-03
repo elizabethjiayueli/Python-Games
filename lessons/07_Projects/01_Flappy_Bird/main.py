@@ -32,7 +32,8 @@ class Flappy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image_num = 0
-        self.image = pygame.image.load(assets/'bluebird-upflap.png')
+        self.original_image = pygame.image.load(assets/'bluebird-upflap.png')
+        self.image = pygame.transform.scale(self.original_image, (68, 48))
         self.images =  [pygame.image.load(assets/'bluebird-upflap.png'),
                         pygame.image.load(assets/'bluebird-midflap.png'),
                         pygame.image.load(assets/'bluebird-downflap.png')]
@@ -82,7 +83,7 @@ class Pipe(pygame.sprite.Sprite):
         # .image, Settings.screen)
         self.rect[0] = Settings.screen_width
     def update(self):
-        self.rect[0] -= 5
+        self.rect[0] -= 7
         
 class Pipes():
     def __init__(self):
