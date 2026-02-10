@@ -160,7 +160,7 @@ class Game:
         if self.frame_count % 80 == 0:
             direction = random.choice([0, 1])
             car = Car(self, direction)
-            car.rect.y = random.randint(10, (Settings.screen_height//5)*5-20)
+            car.rect.y = random.randint(0, (Settings.screen_height//5)*5)
             #print(car.rect.y)
             self.cars.add(car)
             self.all_sprites.add(car)
