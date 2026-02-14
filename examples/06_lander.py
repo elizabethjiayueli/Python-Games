@@ -23,7 +23,7 @@ lander_rotation_speed = 5
 
 # Load and scale the lander image
 lander_image = pygame.image.load(assets/'alien1.gif')
-
+              
 # Scale the image to make it a given height and width
 lander_image = pygame.transform.scale(lander_image, (lander_w, lander_h))
 

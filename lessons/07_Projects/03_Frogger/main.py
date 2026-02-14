@@ -95,7 +95,8 @@ class Car(pygame.sprite.Sprite):
         super().__init__()
         self.original_image = pygame.image.load(assets/'carLeft.png')
         self.rect = self.original_image.get_rect()
-        
+        self.rect[1] = random.randint(1,5)*100+50
+        print (self.rect[1])
         self.image = pygame.transform.scale(self.original_image, (65, 40))
         self.direction = direction
         if direction == 0:
@@ -160,7 +161,7 @@ class Game:
         if self.frame_count % 80 == 0:
             direction = random.choice([0, 1])
             car = Car(self, direction)
-            car.rect.y = random.randint(0, (Settings.screen_height//5)*5)
+            # car.rect.y = random.randint(1,5)*100+50
             #print(car.rect.y)
             self.cars.add(car)
             self.all_sprites.add(car)
@@ -180,6 +181,7 @@ class Game:
             #         #print("space pressed")
             if event.type == pygame.QUIT:
                 self.running = False
+    
         
     
     

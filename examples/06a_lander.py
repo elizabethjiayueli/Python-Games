@@ -23,7 +23,7 @@ lander_width, lander_height = 50, 50
 lander_speed = 0
 lander_acceleration = 0.5
 fuel = 100
-fuel_consumption = 0
+fuel_consumption = 0.5
 lander_speed_x = 0
 
 fuel_cell_width, fuel_cell_height = 30, 30

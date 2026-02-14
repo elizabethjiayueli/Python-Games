@@ -5,9 +5,9 @@ from pathlib import Path
 #VARIABLES
 SCREEN_WIDHT = 400
 SCREEN_HEIGHT = 600
-SPEED = 10
-GRAVITY = 2
-GAME_SPEED = 10
+SPEED = 25
+GRAVITY = 5
+GAME_SPEED = 15
 
 GROUND_WIDHT = 2 * SCREEN_WIDHT
 GROUND_HEIGHT= 100
@@ -152,7 +152,7 @@ def main():
 
     while begin:
 
-        clock.tick(15)
+        clock.tick(25)
 
         for event in pygame.event.get():
             if event.type == QUIT:
