@@ -51,7 +51,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = rect
         self.rect.height = rect.height/2
         self.rect.width = rect.width/2
-        self.position = pygame.math.Vector2(rect.center)  
+        self.position = pygame.math.Vector2(3)  
         self.N = 0
         self.step = 0
         self.init_position, self.final_position = 0,0
@@ -95,7 +95,7 @@ class Car(pygame.sprite.Sprite):
         super().__init__()
         self.original_image = pygame.image.load(assets/'carLeft.png')
         self.rect = self.original_image.get_rect()
-        self.rect[1] = random.randint(1,5)*100+50
+        self.rect[1] = random.randint(0,3)*50+50
         print (self.rect[1])
         self.image = pygame.transform.scale(self.original_image, (65, 40))
         self.direction = direction
@@ -158,7 +158,7 @@ class Game:
 
     def create_obstacles(self):
         # Create cars and logs and add them to their respective groups
-        if self.frame_count % 80 == 0:
+        if self.frame_count % 150 == 0:
             direction = random.choice([0, 1])
             car = Car(self, direction)
             # car.rect.y = random.randint(1,5)*100+50
