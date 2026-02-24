@@ -94,10 +94,9 @@ class Car(pygame.sprite.Sprite):
     def __init__(self, game, direction):
         super().__init__()
         self.original_image = pygame.image.load(assets/'carLeft.png')
-        self.rect = self.original_image.get_rect()
-        self.rect[1] = random.randint(0,3)*50+50
-        print (self.rect[1])
         self.image = pygame.transform.scale(self.original_image, (65, 40))
+        self.rect = self.image.get_rect()
+        self.rect[1] = random.randint(0,3)*50+50
         self.direction = direction
         if direction == 0:
             self.move = -0.5
@@ -129,6 +128,7 @@ class Car(pygame.sprite.Sprite):
             #print("kill")
         if self.rect.y <= 50 or self.rect.y >= Settings.screen_height-80:
             self.kill()
+        self.rect.draw(Settings.screen)
             #print("remove offscreen")
 class Log(pygame.sprite.Sprite):
     def __init__(self, game):
@@ -196,6 +196,7 @@ game = Game()
 sprite_rect = game.frog_sprites[0].get_rect(center=(Settings.screen.get_width() // 2, Settings.screen.get_height() // 2))
 player = Player(sprite_rect, game.frog_sprites)
 player_group = pygame.sprite.GroupSingle(player)
+lives = 5
 
 
 hold=False
@@ -230,6 +231,12 @@ while running:
             hold = True
     if not any(keys):
         hold = False
+    collider = pygame.sprite.spritecollide(player, game.cars, False)
+    if collider:
+        print("collision")
+        player.rect.center = (Settings.screen.get_width() // 2, Settings.screen.get_height() // 2)
+        lives -= 1
+        print("lives remaining: ", lives)
 
     Settings.screen.blit(game.full_background, (0,0))
     game.handle_events()
@@ -240,9 +247,10 @@ while running:
     game.create_obstacles()
     for car in game.cars:
         car.update()
+        pygame.draw.rect(Settings.screen, Settings.LINE_COLOR, car.rect)
     game.cars.draw(Settings.screen)
+        
     pygame.display.flip() 
-    
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

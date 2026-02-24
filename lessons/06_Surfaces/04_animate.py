@@ -246,9 +246,9 @@ def main():
         # Get the current sprite and display it in the middle of the screen
         
         
-        #pygame.draw.rect(screen, Settings.LINE_COLOR, player.rect)
+        pygame.draw.rect(screen, Settings.LINE_COLOR, player.rect)
         player.draw(frog_index)
-        #pygame.draw.rect(screen, Settings.LINE_COLOR, croc.rect)
+        pygame.draw.rect(screen, Settings.LINE_COLOR, croc.rect)
         composed_alligator = Alligator.draw_alligator(croc, allig_sprites, allig_index)
         screen.blit(composed_alligator,  croc.rect.move(croc.offset))
         
