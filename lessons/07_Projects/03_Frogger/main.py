@@ -24,6 +24,7 @@ class Settings:
     WIDTH, HEIGHT = 600, 300
     PLAYER_SIZE = 25
     position = (100, 1000)
+    LINE_COLOR = (255, 0, 0)
 #screen = pygame.display.set_mode((Settings.WIDTH, Settings.HEIGHT))
 def scale_sprites(sprites, scale):
     """Scale a list of sprites by a given factor.
@@ -51,10 +52,10 @@ class Player(pygame.sprite.Sprite):
         self.rect = rect
         self.rect.height = rect.height/2
         self.rect.width = rect.width/2
-        self.position = pygame.math.Vector2(3)  
+        #self.position = pygame.math.Vector2(rect[0], rect[1])  
         self.N = 0
         self.step = 0
-        self.init_position, self.final_position = 0,0
+        #self.init_position, self.final_position = 0,0
         self.image = self.frog_sprites[0]
 
 
@@ -128,7 +129,7 @@ class Car(pygame.sprite.Sprite):
             #print("kill")
         if self.rect.y <= 50 or self.rect.y >= Settings.screen_height-80:
             self.kill()
-        self.rect.draw(Settings.screen)
+        #self.rect.draw(Settings.screen)
             #print("remove offscreen")
 class Log(pygame.sprite.Sprite):
     def __init__(self, game):
@@ -193,7 +194,7 @@ class Game:
     # Main game loop
 running = True
 game = Game()
-sprite_rect = game.frog_sprites[0].get_rect(center=(Settings.screen.get_width() // 2, Settings.screen.get_height() // 2))
+sprite_rect = game.frog_sprites[0].get_rect(center=(Settings.screen.get_width() // 2, Settings.screen.get_height()))
 player = Player(sprite_rect, game.frog_sprites)
 player_group = pygame.sprite.GroupSingle(player)
 lives = 5
@@ -234,10 +235,14 @@ while running:
     collider = pygame.sprite.spritecollide(player, game.cars, False)
     if collider:
         print("collision")
-        player.rect.center = (Settings.screen.get_width() // 2, Settings.screen.get_height() // 2)
+        player.rect.center = (Settings.screen.get_width() // 2, Settings.screen.get_height())
         lives -= 1
+        if lives <=0:
+            print("Game Over")
+            running = False
         print("lives remaining: ", lives)
-
+    if player.rect.y <= 0:
+        pass
     Settings.screen.blit(game.full_background, (0,0))
     game.handle_events()
     # player_group.draw(Settings.screen)
