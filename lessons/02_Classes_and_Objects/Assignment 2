@@ -62,11 +62,11 @@ class Child(Person):
         
         
 # Now lets make a family
-mom = Parent("Hyeseung", 49, "Ahn")
-dad = Parent("Minsik", 50, "Ahn", mom)
+mom = Parent("Hyeseung", 50, "Ahn")
+dad = Parent("Minsik", 51, "Ahn", mom)
 
-jayden = Child("Jayden", 11, [mom, dad], "Ahn")
-ella = Child("Ella", 14, [mom, dad], "Ahn")
+jayden = Child("Jayden", 13, [mom, dad], "Ahn")
+ella = Child("Ella", 16, [mom, dad], "Ahn")
 def print_family(parent):
     print(parent.spouse.name)
     print(parent.name)
@@ -83,4 +83,4 @@ print_family(mom)
 mom.say_hello("Hello!") # Call the say_hello method of the mom object
 print()
 ella.say_hello("Hello!")
-jayden.say_hello("Wassup!")
+jayden.say_hello("sqworl is peak")

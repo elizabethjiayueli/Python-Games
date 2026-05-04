@@ -1,3 +1,5 @@
+from tkinter import Tk, font, messagebox, simpledialog
+
 import pygame
 import random
 import time
@@ -25,6 +27,7 @@ class Settings:
     PLAYER_SIZE = 25
     position = (100, 1000)
     LINE_COLOR = (255, 0, 0)
+    eingengrau = (22, 22, 29)
 #screen = pygame.display.set_mode((Settings.WIDTH, Settings.HEIGHT))
 def scale_sprites(sprites, scale):
     """Scale a list of sprites by a given factor.
@@ -50,8 +53,10 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.frog_sprites = frog_sprites
         self.rect = rect
-        self.rect.height = rect.height/2
-        self.rect.width = rect.width/2
+        self.rect.x +=self.rect.width//8
+        self.rect.y +=self.rect.height//8
+        self.rect.height -= rect.height*1/4
+        self.rect.width -= rect.width//4
         #self.position = pygame.math.Vector2(rect[0], rect[1])  
         self.N = 0
         self.step = 0
@@ -61,7 +66,7 @@ class Player(pygame.sprite.Sprite):
 
     def draw(self, frog_index, show_line=True):
         """Draws the player and the direction vector on the screen."""
-        x, y = self.rect.center
+        self.rect.center= self.rect.x+20, self.rect.y+20 
         #pygame.draw.rect(screen, Settings.PLAYER_COLOR, (self.position.x - Settings.PLAYER_SIZE // 2, self.position.y - Settings.PLAYER_SIZE // 2, Settings.PLAYER_SIZE, Settings.PLAYER_SIZE))
         
         width, height = self.rect[2], self.rect[3]
@@ -198,7 +203,10 @@ sprite_rect = game.frog_sprites[0].get_rect(center=(Settings.screen.get_width() 
 player = Player(sprite_rect, game.frog_sprites)
 player_group = pygame.sprite.GroupSingle(player)
 lives = 5
-
+font = pygame.font.SysFont(None, 40)
+level=1
+high_score = 0
+score_text = font.render(f"Levels: {level}", True, (255, 255, 255))
 
 hold=False
 pygame.math.Vector2(1, 0)
@@ -239,10 +247,23 @@ while running:
         lives -= 1
         if lives <=0:
             print("Game Over")
-            running = False
+            level = 1
+            lives = 5
+            score_text = font.render(f"Level {level}", True, (255, 255, 255))
+            Settings.screen.blit(score_text, (32, 48)) 
+        if level > high_score:
+            high_score = level
+            print("New high score: ", high_score)
         print("lives remaining: ", lives)
     if player.rect.y <= 0:
-        pass
+        level+=1
+        print("Level up! Current level: ", level)
+        if level > high_score:
+            high_score = level
+            print("New high score: ", high_score)
+        player.rect.center = (Settings.screen.get_width() // 2, Settings.screen.get_height())
+        score_text = font.render(f"Level {level}", True, (255, 255, 255))
+        Settings.screen.blit(score_text, (16, 24))   
     Settings.screen.blit(game.full_background, (0,0))
     game.handle_events()
     # player_group.draw(Settings.screen)
@@ -252,9 +273,10 @@ while running:
     game.create_obstacles()
     for car in game.cars:
         car.update()
+        pygame.draw.rect(Settings.screen, Settings.LINE_COLOR, player.rect)
         pygame.draw.rect(Settings.screen, Settings.LINE_COLOR, car.rect)
     game.cars.draw(Settings.screen)
-        
+    Settings.screen.blit(score_text, (32, 48)) 
     pygame.display.flip() 
     
     for event in pygame.event.get():
