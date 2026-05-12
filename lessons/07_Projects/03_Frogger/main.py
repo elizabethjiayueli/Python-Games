@@ -261,6 +261,9 @@ while running:
         if level > high_score:
             high_score = level
             print("New high score: ", high_score)
+    if level == 5:        
+        print("Congrats, you got all the frogs across safely!")
+        running= False
         player.rect.center = (Settings.screen.get_width() // 2, Settings.screen.get_height())
         score_text = font.render(f"Level {level}", True, (255, 255, 255))
         Settings.screen.blit(score_text, (16, 24))   
