@@ -21,13 +21,13 @@ class Settings:
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption('FROGGER')  
     FPS = 30
-    obstacle_speed = 10
+    obstacle_speed = 0.25
     width, height = 48, 56
     WIDTH, HEIGHT = 600, 300
     PLAYER_SIZE = 25
     position = (100, 1000)
     LINE_COLOR = (255, 0, 0)
-    eingengrau = (22, 22, 29)
+    red = LINE_COLOR
 #screen = pygame.display.set_mode((Settings.WIDTH, Settings.HEIGHT))
 def scale_sprites(sprites, scale):
     """Scale a list of sprites by a given factor.
@@ -105,12 +105,12 @@ class Car(pygame.sprite.Sprite):
         self.rect[1] = random.randint(0,3)*50+50
         self.direction = direction
         if direction == 0:
-            self.move = -0.5
+            self.move = -Settings.obstacle_speed
             
             self.rect.left = Settings.screen_width
         
         if direction == 1:
-            self.move = 0.5
+            self.move = Settings.obstacle_speed
             self.largeimage = pygame.transform.flip(pygame.image.load(assets/'carLeft.png'), True, False)
             self.image = pygame.transform.scale(self.largeimage, (65, 40))
             self.rect.right = 0
@@ -150,7 +150,7 @@ class Game:
         self.cellsize = (16, 16)  # Replace with the size of your sprites
         self.spritesheet = SpriteSheet(self.filename, self.cellsize)
         self.frog_sprites = scale_sprites(self.spritesheet.load_strip(0, 4, colorkey=-1) , 4)
-        
+        self.health = 5
     # Compose an image
         log = self.spritesheet.compose_horiz([24, 25, 26], colorkey=-1)
         log = pygame.transform.scale(log, (log.get_width() * 4, log.get_height() * 4))
@@ -206,22 +206,29 @@ lives = 5
 font = pygame.font.SysFont(None, 40)
 level=1
 high_score = 0
-score_text = font.render(f"Levels: {level}", True, (255, 255, 255))
+score_text = font.render(f"Level {level}", True, (255, 255, 255))
 
 hold=False
 pygame.math.Vector2(1, 0)
 key_limit = 0
 running = True
+tick_count = 10000
+score = 0
 while running:
     frog_sprites = scale_sprites(game.spritesheet.load_strip(0, 4, colorkey=-1) , 4)
 
     # Update animation every few frames
     game.frame_count += 1
     key_limit += 1
-
-    # Create cars
+    if tick_count <= 0:
+        tick_count = 0
+    else:
+        tick_count -=1
     
-
+    ticks = int(tick_count)//100
+    
+    # Health bars
+    
     keys = pygame.key.get_pressed()
     
     if hold == False:
@@ -245,42 +252,66 @@ while running:
         print("collision")
         player.rect.center = (Settings.screen.get_width() // 2, Settings.screen.get_height())
         lives -= 1
+        score -= 50
         if lives <=0:
             print("Game Over")
+            Settings.obstacle_speed = 0.25
             level = 1
+            score = 0
             lives = 5
             score_text = font.render(f"Level {level}", True, (255, 255, 255))
             Settings.screen.blit(score_text, (32, 48)) 
-        if level > high_score:
-            high_score = level
+        if score > high_score:
+            high_score = score
             print("New high score: ", high_score)
         print("lives remaining: ", lives)
     if player.rect.y <= 0:
         level+=1
+        player.rect.y = Settings.screen_height
+        Settings.obstacle_speed += 0.1
+        print(ticks)
+        score += ticks + 50
+        tick_count = 10000
+
+        
         print("Level up! Current level: ", level)
         if level > high_score:
             high_score = level
             print("New high score: ", high_score)
-    if level == 5:        
-        print("Congrats, you got all the frogs across safely!")
-        running= False
+    
         player.rect.center = (Settings.screen.get_width() // 2, Settings.screen.get_height())
-        score_text = font.render(f"Level {level}", True, (255, 255, 255))
-        Settings.screen.blit(score_text, (16, 24))   
+    score_text = font.render(f"Level {level}", True, (255, 255, 255))
+    Settings.screen.blit(score_text, (16, 24))   
     Settings.screen.blit(game.full_background, (0,0))
     game.handle_events()
     # player_group.draw(Settings.screen)
     # pygame.display.flip()
     player.update()
+    
     player_group.draw(Settings.screen)
     game.create_obstacles()
     for car in game.cars:
         car.update()
-        pygame.draw.rect(Settings.screen, Settings.LINE_COLOR, player.rect)
-        pygame.draw.rect(Settings.screen, Settings.LINE_COLOR, car.rect)
+        #pygame.draw.rect(Settings.screen, Settings.LINE_COLOR, player.rect)
+        #zpygame.draw.rect(Settings.screen, Settings.LINE_COLOR, car.rect)
     game.cars.draw(Settings.screen)
-    Settings.screen.blit(score_text, (32, 48)) 
-    pygame.display.flip() 
+    Settings.screen.blit(score_text, (10, 24)) 
+    tick_text = font.render(f"Score: {score}", True, (8, 17, 59))
+    Settings.screen.blit(tick_text, (400, 270)) 
+    if lives > 0:
+        health_1 = pygame.draw.circle(Settings.screen, Settings.red, (29, 280), 5)
+    if lives > 1:
+        health_2 = pygame.draw.circle(Settings.screen, Settings.red, (44, 280), 5)
+    if lives > 2:
+        health_3 = pygame.draw.circle(Settings.screen, Settings.red, (59, 280), 5)
+    if lives > 3:
+        health_4 = pygame.draw.circle(Settings.screen, Settings.red, (74, 280), 5)
+    if lives > 4:
+        health_5 = pygame.draw.circle(Settings.screen, Settings.red, (89, 280), 5)
+    pygame.display.flip()
+    pygame.display.flip()
+    
+   
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
